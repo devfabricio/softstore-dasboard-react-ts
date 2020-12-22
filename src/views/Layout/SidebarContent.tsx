@@ -102,35 +102,23 @@ const SidebarContent: React.FC = (props) => {
           <li>
             <Link to="/#" className="has-arrow waves-effect">
               <i className="bx bx-store"/>
-              <span>Ecommerce</span>
+              <span>Produtos</span>
             </Link>
             <ul className="sub-menu" aria-expanded="false">
               <li>
-                <Link to="/ecommerce-products">Products</Link>
+                <Link to="/produtos/lista">Lista de Produtos</Link>
               </li>
               <li>
-                <Link to="/ecommerce-product-detail">
-                  Product Detail
-                </Link>
+                <Link to="/ecommerce-product-detail">Adicionar Produto</Link>
               </li>
               <li>
-                <Link to="/ecommerce-orders">Orders</Link>
+                <Link to="/ecommerce-orders">Adicionar Categorias</Link>
               </li>
               <li>
-                <Link to="/ecommerce-customers">Customers</Link>
+                <Link to="/ecommerce-orders">Ofertas</Link>
               </li>
               <li>
-                <Link to="/ecommerce-cart">Cart</Link>
-              </li>
-              <li>
-                <Link to="/ecommerce-checkout">Checkout</Link>
-              </li>
-              <li>
-                <Link to="/ecommerce-shops">Shops</Link>
-              </li>
-              <li>
-                <Link to="/ecommerce-add-product">
-                  Add Product</Link>
+                <Link to="/ecommerce-orders">Adicionar Oferta</Link>
               </li>
             </ul>
           </li>
@@ -138,45 +126,14 @@ const SidebarContent: React.FC = (props) => {
           <li>
             <Link to="/#" className="has-arrow waves-effect">
               <i className="bx bx-bitcoin"/>
-              <span>Crypto</span>
+              <span>Vendas</span>
             </Link>
             <ul className="sub-menu" aria-expanded="false">
               <li>
-                <Link to="/crypto-wallet">Wallet</Link>
+                <Link to="/crypto-wallet">Pedidos Realizados</Link>
               </li>
               <li>
-                <Link to="/crypto-buy-sell">Buy/Sell</Link>
-              </li>
-              <li>
-                <Link to="/crypto-exchange">Exchange</Link>
-              </li>
-              <li>
-                <Link to="/crypto-lending">Lending</Link>
-              </li>
-              <li>
-                <Link to="/crypto-orders">Orders</Link>
-              </li>
-              <li>
-                <Link to="/crypto-kyc-application">
-                  KYC Application</Link>
-              </li>
-              <li>
-                <Link to="/crypto-ico-landing">ICO Landing</Link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <Link to="/#" className="has-arrow waves-effect">
-              <i className="bx bx-envelope"/>
-              <span>Email</span>
-            </Link>
-            <ul className="sub-menu" aria-expanded="false">
-              <li>
-                <Link to="/email-inbox">Inbox</Link>
-              </li>
-              <li>
-                <Link to="/email-read">Read Email</Link>
+                <Link to="/crypto-buy-sell">Vendas Concretizadas</Link>
               </li>
             </ul>
           </li>
@@ -184,14 +141,14 @@ const SidebarContent: React.FC = (props) => {
           <li>
             <Link to="/#" className="has-arrow waves-effect">
               <i className="bx bx-receipt"/>
-              <span>Invoices</span>
+              <span>Financeiro</span>
             </Link>
             <ul className="sub-menu" aria-expanded="false">
               <li>
-                <Link to="/invoices-list">Invoice List</Link>
+                <Link to="/invoices-list">Faturamento mensal</Link>
               </li>
               <li>
-                <Link to="/invoices-detail">Invoice Detail</Link>
+                <Link to="/invoices-detail">Faturamento anual</Link>
               </li>
             </ul>
           </li>
@@ -199,14 +156,14 @@ const SidebarContent: React.FC = (props) => {
           <li>
             <Link to="/#" className="has-arrow waves-effect">
               <i className="bx bx-briefcase-alt-2"/>
-              <span>Projects</span>
+              <span>Clientes</span>
             </Link>
             <ul className="sub-menu" aria-expanded="false">
               <li>
-                <Link to="/projects-grid">Projects Grid</Link>
+                <Link to="/projects-grid">Clientes cadastrados</Link>
               </li>
               <li>
-                <Link to="/projects-list">Projects List</Link>
+                <Link to="/projects-list">Últimas compras</Link>
               </li>
               <li>
                 <Link to="/projects-overview">
@@ -222,17 +179,14 @@ const SidebarContent: React.FC = (props) => {
           <li>
             <Link to="/#" className="has-arrow waves-effect">
               <i className="bx bx-task"/>
-              <span>Tasks</span>
+              <span>Publicações</span>
             </Link>
             <ul className="sub-menu" aria-expanded="false">
               <li>
-                <Link to="/tasks-list">Task List</Link>
+                <Link to="/tasks-list">Nova Publicação</Link>
               </li>
               <li>
-                <Link to="/tasks-kanban">Kanban Board</Link>
-              </li>
-              <li>
-                <Link to="/tasks-create">Create Task</Link>
+                <Link to="/tasks-kanban">Lista de Publicações</Link>
               </li>
             </ul>
           </li>
@@ -240,306 +194,23 @@ const SidebarContent: React.FC = (props) => {
           <li>
             <Link to="/#" className="has-arrow waves-effect">
               <i className="bx bxs-user-detail"/>
-              <span>Contacts</span>
+              <span>Loja</span>
             </Link>
             <ul className="sub-menu" aria-expanded="false">
               <li>
-                <Link to="/contacts-grid">User Grid</Link>
+                <Link to="/contacts-grid">Depoimentos</Link>
               </li>
               <li>
-                <Link to="/contacts-list">User List</Link>
+                <Link to="/contacts-list">Redes Sociais</Link>
               </li>
               <li>
-                <Link to="/contacts-profile">Profile</Link>
+                <Link to="/contacts-profile">Sobre a Loja</Link>
               </li>
-            </ul>
-          </li>
-
-          <li className="menu-title">Pages</li>
-          <li>
-            <Link to="/#" className="has-arrow waves-effect">
-              <i className="bx bx-user-circle"/>
-              <span>Authentication</span>
-            </Link>
-            <ul className="sub-menu">
               <li>
-                <Link to="/pages-login">Login</Link>
+                <Link to="/contacts-profile">Informações de Contato</Link>
               </li>
               <li>
-                <Link to="/pages-register">Register</Link>
-              </li>
-              <li>
-                <Link to="/pages-forget-pwd">Forget Password</Link>
-              </li>
-              <li>
-                <Link to="/auth-lock-screen">Lock Screen</Link>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <Link to="/#" className="has-arrow waves-effect">
-              <i className="bx bx-file"/>
-              <span>Utility</span>
-            </Link>
-            <ul className="sub-menu" aria-expanded="false">
-              <li>
-                <Link to="/pages-starter">Starter Page</Link>
-              </li>
-              <li>
-                <Link to="/pages-maintenance">Maintenance</Link>
-              </li>
-              <li>
-                <Link to="/pages-comingsoon">Coming Soon</Link>
-              </li>
-              <li>
-                <Link to="/pages-timeline">Timeline</Link>
-              </li>
-              <li>
-                <Link to="/pages-faqs">FAQs</Link>
-              </li>
-              <li>
-                <Link to="/pages-pricing">Pricing</Link>
-              </li>
-              <li>
-                <Link to="/pages-404">Error 404</Link>
-              </li>
-              <li>
-                <Link to="/pages-500">Error 500</Link>
-              </li>
-            </ul>
-          </li>
-
-          <li className="menu-title">Components</li>
-
-          <li>
-            <Link to="/#" className="has-arrow waves-effect">
-              <i className="bx bx-tone"/>
-              <span>UI Elements</span>
-            </Link>
-            <ul className="sub-menu" aria-expanded="false">
-              <li>
-                <Link to="/ui-alerts">Alerts</Link>
-              </li>
-              <li>
-                <Link to="/ui-buttons">Buttons</Link>
-              </li>
-              <li>
-                <Link to="/ui-cards">Cards</Link>
-              </li>
-              <li>
-                <Link to="/ui-carousel">Carousel</Link>
-              </li>
-              <li>
-                <Link to="/ui-dropdowns">Dropdowns</Link>
-              </li>
-              <li>
-                <Link to="/ui-grid">Grid</Link>
-              </li>
-              <li>
-                <Link to="/ui-images">Images</Link>
-              </li>
-              <li>
-                <Link to="/ui-lightbox">Lightbox</Link>
-              </li>
-              <li>
-                <Link to="/ui-modals">Modals</Link>
-              </li>
-              <li>
-                <Link to="/ui-rangeslider">Range Slider</Link>
-              </li>
-              <li>
-                <Link to="/ui-session-timeout">
-                  Session Timeout</Link>
-              </li>
-              <li>
-                <Link to="/ui-progressbars">Progress Bars</Link>
-              </li>
-              <li>
-                <Link to="/ui-sweet-alert">Sweet-Alert</Link>
-              </li>
-              <li>
-                <Link to="/ui-tabs-accordions">
-                  Tabs & Accordions</Link>
-              </li>
-              <li>
-                <Link to="/ui-typography">Typography</Link>
-              </li>
-              <li>
-                <Link to="/ui-video">Video</Link>
-              </li>
-              <li>
-                <Link to="/ui-general">General</Link>
-              </li>
-              <li>
-                <Link to="/ui-colors">Colors</Link>
-              </li>
-              <li>
-                <Link to="/ui-rating">Rating</Link>
-              </li>
-              <li>
-                <Link to="/ui-notifications">Notifications</Link>
-              </li>
-              <li>
-                <Link to="/ui-image-cropper">Image Cropper</Link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <Link to="/#" className="waves-effect">
-              <i className="bx bxs-eraser"/>
-              <span className="badge badge-pill badge-danger float-right">
-                6
-              </span>
-              <span>Forms</span>
-            </Link>
-            <ul className="sub-menu" aria-expanded="false">
-              <li>
-                <Link to="/form-elements">Form Elements</Link>
-              </li>
-              <li>
-                <Link to="/form-layouts">Form Layouts</Link>
-              </li>
-              <li>
-                <Link to="/form-validation">Form Validation</Link>
-              </li>
-              <li>
-                <Link to="/form-advanced">Form Advanced</Link>
-              </li>
-              <li>
-                <Link to="/form-editors">Form Editors</Link>
-              </li>
-              <li>
-                <Link to="/form-uploads">Form File Upload</Link>
-              </li>
-              <li>
-                <Link to="/form-xeditable">Form Xeditable</Link>
-              </li>
-              <li>
-                <Link to="/form-repeater">Form Repeater</Link>
-              </li>
-              <li>
-                <Link to="/form-wizard">Form Wizard</Link>
-              </li>
-              <li>
-                <Link to="/form-mask">Form Mask</Link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <Link to="/#" className="has-arrow waves-effect">
-              <i className="bx bx-list-ul"/>
-              <span>Tables</span>
-            </Link>
-            <ul className="sub-menu" aria-expanded="false">
-              <li>
-                <Link to="/tables-basic">Basic Tables</Link>
-              </li>
-              <li>
-                <Link to="/tables-datatable">Data Tables</Link>
-              </li>
-              <li>
-                <Link to="/tables-responsive">
-                  Responsive Table</Link>
-              </li>
-              <li>
-                <Link to="/tables-editable">Editable Table</Link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <Link to="/#" className="has-arrow waves-effect">
-              <i className="bx bxs-bar-chart-alt-2"/>
-              <span>Charts</span>
-            </Link>
-
-            <ul className="sub-menu" aria-expanded="false">
-              <li>
-                <Link to="/apex-charts">Apex charts</Link>
-              </li>
-              <li>
-                <Link to="/chartist-charts">Chartist Chart</Link>
-              </li>
-              <li>
-                <Link to="/chartjs-charts">Chartjs Chart</Link>
-              </li>
-              <li>
-                <Link to="/e-charts">E Chart</Link>
-              </li>
-              <li>
-                <Link to="/tui-charts">Toast UI Chart</Link>
-              </li>
-              <li>
-                <Link to="/sparkline-charts">Sparkline Chart</Link>
-              </li>
-              <li>
-                <Link to="/charts-knob">Knob Chart</Link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <Link to="/#" className="has-arrow waves-effect">
-              <i className="bx bx-aperture"/>
-              <span>Icons</span>
-            </Link>
-            <ul className="sub-menu" aria-expanded="false">
-              <li>
-                <Link to="/icons-boxicons">Boxicons</Link>
-              </li>
-              <li>
-                <Link to="/icons-materialdesign">
-                  Material Design</Link>
-              </li>
-              <li>
-                <Link to="/icons-dripicons">Dripicons</Link>
-              </li>
-              <li>
-                <Link to="/icons-fontawesome">Font awesome</Link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <Link to="/#" className="has-arrow waves-effect">
-              <i className="bx bx-map"/>
-              <span>Maps</span>
-            </Link>
-            <ul className="sub-menu" aria-expanded="false">
-              <li>
-                <Link to="/maps-google">Google Maps</Link>
-              </li>
-              <li>
-                <Link to="/maps-vector">Vector Maps</Link>
-              </li>
-              <li>
-                <Link to="/maps-leaflet">Leaflet Maps</Link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <Link to="/#" className="has-arrow waves-effect">
-              <i className="bx bx-share-alt"/>
-              <span>Multi Level</span>
-            </Link>
-            <ul className="sub-menu" aria-expanded="true">
-              <li>
-                <Link to="/#">Level 1.1</Link>
-              </li>
-              <li>
-                <Link to="/#" className="has-arrow">
-                  Level 1.2</Link>
-                <ul className="sub-menu" aria-expanded="true">
-                  <li>
-                    <Link to="/#">Level 2.1</Link>
-                  </li>
-                  <li>
-                    <Link to="/#">Level 2.2</Link>
-                  </li>
-                </ul>
+                <Link to="/contacts-profile">Endereço</Link>
               </li>
             </ul>
           </li>

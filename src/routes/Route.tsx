@@ -10,6 +10,7 @@ interface RouteProps extends Router.RouteProps {
 const Route : React.FC<RouteProps> = ({ isPrivate = false, component: Component, ...rest }) => {
   const { administrator } = useAuth()
   return <Router.Route {...rest} render={() => {
+    console.log('chegou aqui')
     return isPrivate === !!administrator ? (<Component />) : <Router.Redirect to={{ pathname: isPrivate ? '/login' : '/' }}/>
   }}/>
 }

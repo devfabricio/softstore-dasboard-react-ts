@@ -8,7 +8,8 @@ const AppProvider: React.FC = ({ children }) => {
       <LayoutProvider>
         { children }
       </LayoutProvider>
-    </AuthProvider>)
+    </AuthProvider>
+  )
 }
 
 export default AppProvider
