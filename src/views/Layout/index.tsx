@@ -1,26 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react'
-
-// Layout Related Components
+import React, { useCallback, useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 import Header from './Header'
 import Sidebar from './Sidebar'
 import Footer from './Footer'
-import { useLayout } from '../context/LayoutContext'
+import { useLayout } from '../context/LayoutProvider'
 
-interface LayoutProps {
-  isPreloader: boolean,
-  pathName: string,
-}
-
-const Layout: React.FC<LayoutProps> = (props) => {
-  const [isMobile] = useState(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
-  const { changeSidebarType, changeSidebarTheme, changeTopbarTheme, changeLayoutWidth, layoutWidth, topbarTheme, sidebarType, sidebarTheme } = useLayout()
-
+const Layout: React.FC = ({ children }) => {
+  const { changeSidebarType, changeSidebarTheme, changeTopbarTheme, changeLayoutWidth, isPreloader, layoutWidth, topbarTheme, sidebarType, sidebarTheme } = useLayout()
+  const history = useHistory()
   const capitalizeFirstLetter = useCallback((str: string): string => {
     return str.charAt(1).toUpperCase() + str.slice(2)
   }, [])
 
   useEffect(() => {
-    if (props.isPreloader) {
+    if (isPreloader) {
       document.getElementById('preloader')!!.style.display = 'block'
       document.getElementById('status')!!.style.display = 'block'
 
@@ -35,7 +28,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
 
     // Scroll Top to 0
     window.scrollTo(0, 0)
-    const currentage = capitalizeFirstLetter(props.pathName)
+    const currentage = capitalizeFirstLetter(history.location.pathname)
 
     document.title =
       currentage + ' | Skote - Responsive Bootstrap 4 Admin Dashboard'
@@ -53,15 +46,8 @@ const Layout: React.FC<LayoutProps> = (props) => {
     if (topbarTheme) {
       changeTopbarTheme(topbarTheme)
     }
-  }, [capitalizeFirstLetter, props])
-
-  const toggleMenuCallback = useCallback(() => {
-    if (sidebarType === 'default') {
-      changeSidebarType('condensed', isMobile)
-    } else if (sidebarType === 'condensed') {
-      changeSidebarType('default', isMobile)
-    }
-  }, [])
+  }, [capitalizeFirstLetter, changeLayoutWidth, changeSidebarTheme, changeSidebarType, changeTopbarTheme,
+    history.location.pathname, isPreloader, layoutWidth, sidebarTheme, sidebarType, topbarTheme])
 
   return (
       <React.Fragment>
@@ -83,7 +69,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
           <Sidebar
             type={sidebarType}
           />
-          <div className="main-content">{props.children}</div>
+          <div className="main-content">{ children }</div>
           <Footer />
         </div>
       </React.Fragment>

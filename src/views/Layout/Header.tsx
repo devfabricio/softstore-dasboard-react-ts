@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Dropdown, DropdownToggle, DropdownMenu, Row, Col } from 'reactstrap'
-
-// Import menuDropdown
-import LanguageDropdown from '../components/CommonForBoth/TopbarDropdown/LanguageDropdown'
 import NotificationDropdown from '../components/CommonForBoth/TopbarDropdown/NotificationDropdown'
 import ProfileMenu from '../components/CommonForBoth/TopbarDropdown/ProfileMenu'
 
@@ -20,7 +17,7 @@ import dribbble from '../../assets/images/brands/dribbble.png'
 import dropbox from '../../assets/images/brands/dropbox.png'
 import mailChimp from '../../assets/images/brands/mail_chimp.png'
 import slack from '../../assets/images/brands/slack.png'
-import { useLayout } from '../context/LayoutContext'
+import { useLayout } from '../context/LayoutProvider'
 
 const Header: React.FC = () => {
   const [search, setsearch] = useState(false)
@@ -274,8 +271,6 @@ const Header: React.FC = () => {
                 </form>
               </div>
             </div>
-
-            <LanguageDropdown />
 
             <Dropdown
               className="d-none d-lg-inline-block ml-1"

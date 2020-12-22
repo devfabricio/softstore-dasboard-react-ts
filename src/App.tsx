@@ -1,8 +1,8 @@
 import React from 'react'
-import GlobalStyle from './styles/global'
 import { BrowserRouter } from 'react-router-dom'
 import Routes from './routes'
-import AppProvider from './context'
+import AppProvider from './views/context'
+import './assets/scss/theme.scss'
 
 function App () {
   return (
@@ -10,7 +10,6 @@ function App () {
       <AppProvider>
         <Routes />
       </AppProvider>
-      <GlobalStyle />
     </BrowserRouter>
   )
 }

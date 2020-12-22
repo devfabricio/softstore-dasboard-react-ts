@@ -1,9 +1,13 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import { Row, Col, BreadcrumbItem } from 'reactstrap'
 
-const Breadcrumb: React.FC = (props) => {
+interface BreadcrumbProps {
+  breadcrumbItem: string
+  title: string
+}
+
+const Breadcrumb: React.FC<BreadcrumbProps> = (props) => {
   return (
     <Row>
       <Col xs="12">
@@ -23,11 +27,6 @@ const Breadcrumb: React.FC = (props) => {
       </Col>
     </Row>
   )
-}
-
-Breadcrumb.propTypes = {
-  breadcrumbItem: PropTypes.string,
-  title: PropTypes.string
 }
 
 export default Breadcrumb
