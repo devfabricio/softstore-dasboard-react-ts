@@ -59,26 +59,24 @@ export const pages: PageData[] = [
     section: 'dashboard'
   },
   {
-    name: 'ListProducts',
+    name: 'Listar Produtos',
     path: '/produtos/lista',
     isPrivate: true,
     component: ListProducts,
     section: 'products'
   },
   {
-    name: 'AddProduct',
+    name: 'Novo Produto',
     path: '/produtos/novo',
     isPrivate: true,
     component: AddProduct,
     section: 'products'
   },
   {
-    name: 'AddCategory',
+    name: 'Categorias',
     path: '/produtos/categorias',
     isPrivate: true,
     component: AddCategory,
     section: 'products'
   }
 ]
-
-export default pages

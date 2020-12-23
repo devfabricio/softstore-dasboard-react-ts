@@ -12,12 +12,15 @@ import { Link } from 'react-router-dom'
 import { ConfirmAlertDialogProps, confirmAlertDialogDefault } from '../../../components/Feedbacks/AlertDialog'
 import { useFeedback } from '../../../context/FeedbackProvider'
 import PageContent from '../../../components/Common/PageContent'
+import PageCard from '../../../components/Common/PageCard'
+import { Button, Input } from '../../../components/Form'
+import CircularProgress from '../../../components/Feedbacks/CircularProgress'
+import { Form } from '@unform/web'
 
 const AddCategory: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
-
   const [categories, setCategories] = useState<CategoryData[]>([])
-  const [loadingButton, setLoadingButton] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [confirmAlertDialogData, setConfirmAlertDialogData] = useState<ConfirmAlertDialogProps>(confirmAlertDialogDefault)
   const { openToast } = useFeedback()
 
@@ -44,7 +47,7 @@ const AddCategory: React.FC = () => {
   }, [listCategories])
 
   const handleSubmit = useCallback(({ name }: CreateCategoryData) => {
-    setLoadingButton(true)
+    setLoading(true)
     createCategory({ name }, (data, errorMessage) => {
       if (data) {
         categories.push(data)
@@ -54,57 +57,72 @@ const AddCategory: React.FC = () => {
       }
       if (errorMessage) openToast(errorMessage, 'error')
 
-      setLoadingButton(false)
+      setLoading(false)
     })
   }, [openToast, categories])
 
-  console.log(loadingButton, confirmAlertDialogData, handleSubmit)
+  console.log(confirmAlertDialogData)
 
   return (
     <PageContent>
       <Row>
         <Col sm="6">
-          <div className="table-responsive">
-            <Table className="table mb-0">
-              <thead>
-              <tr>
-                <th>#</th>
-                <th>Nome</th>
-                <th>Slug</th>
-                <th>Produtos</th>
-                <th>Ação</th>
-              </tr>
-              </thead>
-              <tbody>
-              {categories.map((category, index) => {
-                const hasProducts = category.productCounter > 0
-                return (
-                  <tr key={category._id}>
-                    <td>{index}</td>
-                    <td><Link to={''}>{category.name}</Link></td>
-                    <td>{category.slug}</td>
-                    <td>{category.productCounter}</td>
-                    <td>
-                      <Link to={`/categoria/${category._id}`} className="mr-3 text-primary">
-                        <i className="mdi mdi-pencil font-size-18 mr-3" id="edittooltip" />
-                        <UncontrolledTooltip placement="top" target="edittooltip">
-                          Edit
-                        </UncontrolledTooltip>
-                      </Link>
-                      <Link to="#" className="text-danger">
-                        <i className="mdi mdi-close font-size-18 mr-3" id="deletetooltip" />
-                        <UncontrolledTooltip placement="top" target="deletetooltip" style={hasProducts ? { opacity: 0.3, cursor: 'unset' } : {}}
-                                             onClick={() => category.productCounter === 0 ? handleDeleteCategory(category._id) : null}>
-                          Delete
-                        </UncontrolledTooltip>
-                      </Link>
-                    </td>
-                  </tr>
-                )
-              })}
-              </tbody>
-            </Table>
-          </div>
+          <PageCard title={'Adicionar categoria'} description={'Preencha o campo abaixo para adicionar uma nova categoria'} >
+            <Form ref={formRef} action="#" onSubmit={handleSubmit}>
+              <Row>
+                <Col sm="12">
+                  <Input name={'name'} type="text" id="username" label={'Nome'} />
+                </Col>
+              </Row>
+              {loading && <CircularProgress />}
+              {!loading && <Button type="submit" color="primary" className="mr-1 waves-effect waves-light"> Adicionar Categoria </Button>}
+            </Form>
+          </PageCard>
+        </Col>
+        <Col sm="6">
+          <PageCard title={'Lista de Categorias'} description={'Confira abaixo a lista de categorias'} >
+            <div className="table-responsive">
+              <Table className="table mb-0">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nome</th>
+                  <th>Slug</th>
+                  <th>Produtos</th>
+                  <th>Ação</th>
+                </tr>
+                </thead>
+                <tbody>
+                {categories.map((category, index) => {
+                  const hasProducts = category.productCounter > 0
+                  return (
+                    <tr key={category._id}>
+                      <td>{index + 1}</td>
+                      <td><Link to={''}>{category.name}</Link></td>
+                      <td>{category.slug}</td>
+                      <td>{category.productCounter}</td>
+                      <td>
+                        <Link to={`/categoria/${category._id}`} className="mr-3 text-primary">
+                          <i className="mdi mdi-pencil font-size-18 mr-3" id="edittooltip" />
+                          <UncontrolledTooltip placement="top" target="edittooltip">
+                            Edit
+                          </UncontrolledTooltip>
+                        </Link>
+                        <Link to="#" className="text-danger">
+                          <i className="mdi mdi-close font-size-18 mr-3" id="deletetooltip" />
+                          <UncontrolledTooltip placement="top" target="deletetooltip" style={hasProducts ? { opacity: 0.3, cursor: 'unset' } : {}}
+                                               onClick={() => category.productCounter === 0 ? handleDeleteCategory(category._id) : null}>
+                            Delete
+                          </UncontrolledTooltip>
+                        </Link>
+                      </td>
+                    </tr>
+                  )
+                })}
+                </tbody>
+              </Table>
+            </div>
+          </PageCard>
         </Col>
       </Row>
     </PageContent>
