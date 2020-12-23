@@ -4,12 +4,14 @@ import Route from './Route'
 import Dashboard from '../views/pages/Dashboard'
 import Login from '../views/pages/Login'
 import ListProducts from '../views/pages/Products/ListProducts'
+import AddProduct from '../views/pages/Products/AddProduct'
 
 const Routes: React.FC = () => {
   return (
     <Switch>
       <Route path={'/login'} exact component={Login} />
       <Route path={'/produtos/lista'} isPrivate={true} exact component={ListProducts} />
+      <Route path={'/produtos/novo'} isPrivate={true} exact component={AddProduct} />
       <Route path={'/'} exact isPrivate={true} component={Dashboard} />
     </Switch>
   )

@@ -109,7 +109,7 @@ const SidebarContent: React.FC = (props) => {
                 <Link to="/produtos/lista">Lista de Produtos</Link>
               </li>
               <li>
-                <Link to="/ecommerce-product-detail">Adicionar Produto</Link>
+                <Link to='/produtos/novo'>Adicionar Produto</Link>
               </li>
               <li>
                 <Link to="/ecommerce-orders">Adicionar Categorias</Link>

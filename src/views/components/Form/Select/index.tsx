@@ -27,7 +27,7 @@ const Select: React.FC<SelectProps> = ({ name, labelText, options, ...props }) =
   }, [registerField, fieldName])
 
   return (
-    <S.SelectContainer>
+    <S.SelectContainer className={'form-group'}>
       {labelText && <label>{labelText}</label>}
       <select ref={selectRef} {...props} onChange={() => {}}>
         {options.map((optionItem, i) =>
