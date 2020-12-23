@@ -1,25 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Form } from '@unform/web'
-import {
-  Card,
-  CardBody,
-  CardSubtitle,
-  CardTitle,
-  Col,
-  Container,
-  Row
-} from 'reactstrap'
-import Dropzone from 'react-dropzone'
+import { Col, Row } from 'reactstrap'
 import { FormHandles } from '@unform/core'
 import { useFeedback } from '../../../context/FeedbackProvider'
-import Layout from '../../../Layout'
 import { Input, Button, TextAerea, Select } from '../../../components/Form'
 import { createProduct, ProductDataRequest } from '../../../../services/api/products'
 import { CategoryData, listCategory } from '../../../../services/api/categories'
 import { SelectOptionsTypes } from '../../../components/Form/Select'
 import InputCurrencyMask from '../../../components/Form/InputCurrencyMask'
-import Breadcrumbs from '../../../components/Common/Breadcrumb'
-import { Link } from 'react-router-dom'
+import PageContent from '../../../components/Common/PageContent'
+import PageCard from '../../../components/Common/PageCard'
+import PageDropzone from '../../../components/Common/PageDropzone'
+import CircularProgress from '../../../components/Feedbacks/CircularProgress'
 
 type AcceptedFile = {file: File, formattedSize: string, preview: string}
 
@@ -41,7 +33,6 @@ const AddProduct: React.FC = () => {
   }, [listCategories])
 
   const handleSubmit = useCallback((data: ProductDataRequest) => {
-    console.log(loading)
     const acceptedFile = acceptedFiles[0]
     if (acceptedFile) {
       setLoading(true)
@@ -80,119 +71,28 @@ const AddProduct: React.FC = () => {
   }, [formatBytes])
 
   return (
-    <Layout>
-      <div className="page-content">
-        <Container fluid>
-          {/* Render Breadcrumb */}
-          <Breadcrumbs title="Ecommerce" breadcrumbItem="Add Product" />
-
+    <PageContent>
+      <PageCard title={'Novo Produto'} description={'Insira as informações abaixo para adicionar o produto'}>
+        <Form ref={formRef} action="#" onSubmit={handleSubmit}>
           <Row>
-            <Col xs="12">
-              <Card>
-                <CardBody>
-                  <CardTitle>Basic Information</CardTitle>
-                  <CardSubtitle className="mb-3">
-                    Fill all information below
-                  </CardSubtitle>
-
-                  <Form ref={formRef} action="#" onSubmit={handleSubmit}>
-                    <Row>
-                      <Col sm="6">
-                        <Input name={'name'} type="text" id="username" label={'Nome'} className="form-control" />
-                        <Select name={'category'} labelText={'Escolha uma categoria'} options={selectOptions()} className="form-control select2" />
-                        <InputCurrencyMask name={'price'} labelText={'Preço'} defaultValue={0} />
-                        <InputCurrencyMask name={'oldPrice'} labelText={'Preço Antigo'} defaultValue={0} />
-                      </Col>
-                      <Col sm="6">
-                        <TextAerea name={'description'} id="username" labelText={'Descrição'} className="form-control" rows={5} />
-                      </Col>
-                    </Row>
-
-                    <Button
-                      type="submit"
-                      color="primary"
-                      className="mr-1 waves-effect waves-light"
-                    >
-                      Save Changes
-                    </Button>
-                    <Button
-                      type="submit"
-                      color="secondary"
-                      className="waves-effect"
-                    >
-                      Cancel
-                    </Button>
-                  </Form>
-                </CardBody>
-              </Card>
-
-              <Card>
-                <CardBody>
-                  <CardTitle className="mb-3">Product Images</CardTitle>
-                    <Dropzone
-                      onDrop={acceptedFiles => {
-                        handleAcceptedFiles(acceptedFiles)
-                      }}
-                    >
-                      {({ getRootProps, getInputProps }) => (
-                        <div className="dropzone">
-                          <div
-                            className="dz-message needsclick"
-                            {...getRootProps()}
-                          >
-                            <input {...getInputProps()} />
-                            <div className="dz-message needsclick">
-                              <div className="mb-3">
-                                <i className="display-4 text-muted bx bxs-cloud-upload" />
-                              </div>
-                              <h4>Drop files here or click to upload.</h4>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </Dropzone>
-                    <div className="dropzone-previews mt-3" id="file-previews">
-                      {acceptedFiles.map((f, i) => {
-                        return (
-                          <Card
-                            className="mt-1 mb-0 shadow-none border dz-processing dz-image-preview dz-success dz-complete"
-                            key={i + '-file'}
-                          >
-                            <div className="p-2">
-                              <Row className="align-items-center">
-                                <Col className="col-auto">
-                                  <img
-                                    data-dz-thumbnail=""
-                                    height="80"
-                                    className="avatar-sm rounded bg-light"
-                                    alt={f.file.name}
-                                    src={f.preview}
-                                  />
-                                </Col>
-                                <Col>
-                                  <Link
-                                    to="#"
-                                    className="text-muted font-weight-bold"
-                                  >
-                                    {f.file.name}
-                                  </Link>
-                                  <p className="mb-0">
-                                    <strong>{f.formattedSize}</strong>
-                                  </p>
-                                </Col>
-                              </Row>
-                            </div>
-                          </Card>
-                        )
-                      })}
-                    </div>
-                </CardBody>
-              </Card>
+            <Col sm="6">
+              <Input name={'name'} type="text" id="username" label={'Nome'} className="form-control" />
+              <Select name={'category'} labelText={'Escolha uma categoria'} options={selectOptions()} className="form-control select2" />
+              <InputCurrencyMask name={'price'} labelText={'Preço'} defaultValue={0} />
+              <InputCurrencyMask name={'oldPrice'} labelText={'Preço Antigo'} defaultValue={0} />
+            </Col>
+            <Col sm="6">
+              <TextAerea name={'description'} id="username" labelText={'Descrição'} className="form-control" rows={5} />
             </Col>
           </Row>
-        </Container>
-      </div>
-    </Layout>
+          {loading && <CircularProgress />}
+          {!loading && <Button type="submit" color="primary" className="mr-1 waves-effect waves-light"> Adicionar Produto </Button>}
+        </Form>
+      </PageCard>
+      <PageCard title={'Fotos'} description={'Fotos dos produtos'}>
+        <PageDropzone handleAcceptedFiles={handleAcceptedFiles} acceptedFiles={acceptedFiles} />
+      </PageCard>
+    </PageContent>
   )
 }
 
