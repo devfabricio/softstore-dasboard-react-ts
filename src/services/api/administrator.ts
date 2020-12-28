@@ -1,6 +1,7 @@
 import api from './index'
 import { uuid } from 'uuidv4'
 import { uploadObjectOnS3 } from '../aws/upload-object'
+import imageCompression from 'browser-image-compression'
 
 export interface AdministratorData {
   _id: string
@@ -31,18 +32,23 @@ export const updateAdministrator = async (data: AdministratorData, callback: (da
   }
 }
 
+const compressionOptions = {
+  maxSizeMB: 0.4,
+  maxWidthOrHeight: 1024
+}
+
 export const updateProfilePhoto = async (data: AdministratorData, file: File, callback: (data?: AdministratorData, errorMessage?: string) => void): Promise<void> => {
-  console.log(file.type)
-  const ext = 'jpg'
+  const ext = file.name.substr(file.name.length - 3)
   const filename = uuid() + '.' + ext
-  const path = `uploads/images/products/${filename}`
-  data.profileImg = path
+  const path = `uploads/images/users/profile/${filename}`
   delete data.password
+  const body = { ...data, profileImg: path }
   try {
-    await uploadObjectOnS3(file, path)
-    const response = await api.put('administrator', data)
+    const compressedFile: File = await imageCompression(file, compressionOptions) as File
+    await uploadObjectOnS3(compressedFile, path)
+    const response = await api.put('administrator', body)
     if (response) {
-      callback(data)
+      callback(body)
     }
   } catch (error) {
     callback(undefined, error.response.message)

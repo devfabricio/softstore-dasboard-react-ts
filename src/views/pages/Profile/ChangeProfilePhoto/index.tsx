@@ -23,24 +23,30 @@ const ChangeProfilePhoto: React.FC = () => {
   const [image, setImage] = useState(srcPath)
   const [cropData, setCropData] = useState('#')
   const [cropper, setCropper] = useState<any>()
-  const [loading, setLoading] = useState(false)
+  const [loading] = useState(false)
   const [contentType, setContentType] = useState('')
+  const [fileExtension, setFileExtension] = useState('jpg')
+  const [file, setFile] = useState<File | null>(null)
   const { administrator, updateAdministratorData } = useAuth()
-  const { openToast } = useFeedback()
+  const { openToast, showBackdrop, dismissBackdrop } = useFeedback()
 
   const handleSubmit = useCallback(() => {
-    setLoading(true)
-    const file = new File([cropData!!], 'filename', { type: contentType, lastModified: Date.now() })
-    updateProfilePhoto(administrator, file, (data, errorMessage) => {
-      if (data) {
-        openToast('Foto atualizada com sucesso!', 'success')
-        updateAdministratorData(administrator)
-      }
-    })
-  }, [administrator, contentType, cropData, openToast, updateAdministratorData])
+    if (file) {
+      showBackdrop()
+      updateProfilePhoto(administrator, file!!, (data, errorMessage) => {
+        if (data) {
+          openToast('Foto atualizada com sucesso!', 'success')
+          updateAdministratorData(data)
+          dismissBackdrop()
+        }
+      })
+    }
+  }, [administrator, dismissBackdrop, file, openToast, showBackdrop, updateAdministratorData])
 
   const onChange = (e: any) => {
     e.preventDefault()
+    showBackdrop()
+    console.log('onChange')
     let files
 
     if (e.dataTransfer) {
@@ -57,16 +63,30 @@ const ChangeProfilePhoto: React.FC = () => {
 
     if (ext === 'peg' || ext === 'jpg') {
       setContentType('image/jpeg')
+      setFileExtension('jpg')
     } else {
       setContentType('image/png')
+      setFileExtension('png')
     }
     reader.readAsDataURL(files[0])
+    console.log('readAsDataURL')
+    dismissBackdrop()
+  }
+
+  const dataUrlToFile = async (dataUrl: string, fileName: string) => {
+    const res: Response = await fetch(dataUrl)
+    const blob: Blob = await res.blob()
+    const newFile = new File([blob], fileName, { type: contentType })
+    setFile(newFile)
+    console.log(newFile, 'file gerado')
   }
 
   const getCropData = () => {
     if (typeof cropper !== 'undefined') {
       setImage(srcPath)
-      setCropData(cropper.getCroppedCanvas().toDataURL())
+      const url = cropper.getCroppedCanvas().toDataURL()
+      setCropData(url)
+      dataUrlToFile(url, `filename.${fileExtension}`)
     }
   }
 
@@ -74,6 +94,33 @@ const ChangeProfilePhoto: React.FC = () => {
     <PageContent>
       <PageCard title={'Editar Perfil'} description={'Preencha o formulário abaixo para editar os seus dados de perfil'}>
         <Row>
+          {image !== srcPath && <Col xl="12">
+            <div>
+              <div style={{ width: '100%' }}>
+                <Cropper
+                  style={{ height: 400, width: '100%' }}
+                  initialAspectRatio={1}
+                  aspectRatio={1}
+                  preview=".img-preview"
+                  src={image}
+                  viewMode={1}
+                  guides={true}
+                  minCropBoxHeight={10}
+                  minCropBoxWidth={10}
+                  background={false}
+                  responsive={true}
+                  autoCropArea={1}
+                  checkOrientation={false}
+                  onInitialized={(instance) => {
+                    setCropper(instance)
+                  }}
+                />
+                <div className={'text-right mt-3'}>
+                  <Button type="submit" color="primary" className="mr-1 waves-effect waves-light" onClick={getCropData}> Pronto </Button>
+                </div>
+              </div>
+            </div>
+          </Col>}
           <Col xl="12">
             <S.ChangeProfilePhotoWrapper>
               {cropData === '#' && <img src={administrator.profileImg ? `${s3BaseUrl}/${administrator.profileImg}` : userAvatar} height={200} width={200} />}
@@ -104,33 +151,6 @@ const ChangeProfilePhoto: React.FC = () => {
               </div>}
             </S.ChangeProfilePhotoWrapper>
           </Col>
-          {image !== srcPath && <Col xl="12">
-            <div>
-              <div style={{ width: '100%' }}>
-                <Cropper
-                  style={{ height: 400, width: '100%' }}
-                  initialAspectRatio={1}
-                  aspectRatio={1}
-                  preview=".img-preview"
-                  src={image}
-                  viewMode={1}
-                  guides={true}
-                  minCropBoxHeight={10}
-                  minCropBoxWidth={10}
-                  background={false}
-                  responsive={true}
-                  autoCropArea={1}
-                  checkOrientation={false}
-                  onInitialized={(instance) => {
-                    setCropper(instance)
-                  }}
-                />
-                <div className={'text-right mt-10'}>
-                  <Button type="submit" color="primary" className="mr-1 waves-effect waves-light" onClick={getCropData}> Pronto </Button>
-                </div>
-              </div>
-            </div>
-          </Col>}
         </Row>
       </PageCard>
     </PageContent>
