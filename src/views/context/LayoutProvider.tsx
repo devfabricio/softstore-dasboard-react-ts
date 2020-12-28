@@ -65,7 +65,7 @@ const LayoutProvider: React.FC = ({ children }) => {
   }, [])
 
   const toggleLeftmenu = useCallback((isopen: boolean) => {
-    setLeftmenu(isopen)
+    setLeftmenu(!isopen)
   }, [])
 
   const changeLayout = useCallback((layout: string) => {
@@ -76,6 +76,22 @@ const LayoutProvider: React.FC = ({ children }) => {
     if (document.body) document.body.setAttribute(attribute, value)
     return true
   }, [])
+
+  const manageBodyClass = (cssClass: string, action: string = 'toggle') => {
+    switch (action) {
+      case 'add':
+        if (document.body) document.body.classList.add(cssClass)
+        break
+      case 'remove':
+        if (document.body) document.body.classList.remove(cssClass)
+        break
+      default:
+        if (document.body) document.body.classList.toggle(cssClass)
+        break
+    }
+
+    return true
+  }
 
   useEffect(() => {
     if (layoutType === 'horizontal') {
@@ -91,6 +107,29 @@ const LayoutProvider: React.FC = ({ children }) => {
   useEffect(() => {
     changeBodyAttribute('data-sidebar', sidebarTheme)
   }, [changeBodyAttribute, sidebarTheme])
+
+  useEffect(() => {
+    switch (sidebarType) {
+      case 'compact':
+        changeBodyAttribute('data-sidebar-size', 'small')
+        manageBodyClass('sidebar-enable', 'remove')
+        manageBodyClass('vertical-collpsed', 'remove')
+        break
+      case 'icon':
+        changeBodyAttribute('data-keep-enlarged', 'true')
+        manageBodyClass('vertical-collpsed', 'add')
+        break
+      case 'condensed':
+        manageBodyClass('sidebar-enable', 'add')
+        if (!isMobile) manageBodyClass('vertical-collpsed', 'add')
+        break
+      default:
+        changeBodyAttribute('data-sidebar-size', '')
+        manageBodyClass('sidebar-enable', 'remove')
+        if (!isMobile) { manageBodyClass('vertical-collpsed', 'remove') }
+        break
+    }
+  }, [changeBodyAttribute, isMobile, sidebarType])
 
   return (<LayoutContext.Provider value={{
     changeLayout,

@@ -16,6 +16,7 @@ interface AuthState {
 
 interface AuthContextType {
   administrator: AdministratorData
+  updateAdministratorData(administrador: AdministratorData): void
   signIn(credentials: LoginCredentials): Promise<void>
   signOut(): void
 }
@@ -76,7 +77,15 @@ export const AuthProvider: React.FC = ({ children }) => {
     setData({} as AuthState)
   }, [])
 
-  return (<AuthContext.Provider value={{ administrator: data.administrator, signIn, signOut }}>
+  useEffect(() => {
+    console.log(data)
+  }, [data])
+
+  const updateAdministratorData = useCallback((administrador: AdministratorData) => {
+    setData(data => ({ ...data, administrator: administrador }))
+  }, [])
+
+  return (<AuthContext.Provider value={{ administrator: data.administrator, updateAdministratorData, signIn, signOut }}>
     {children}
   </AuthContext.Provider>)
 }
