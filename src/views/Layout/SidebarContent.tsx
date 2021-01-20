@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import MetisMenu from 'metismenujs'
-import { pages, pageSections } from '../../data/pages'
+import { pageSections } from '../../data/pages'
 
 const SidebarContent: React.FC = (props) => {
   const history = useHistory()
@@ -59,25 +59,32 @@ const SidebarContent: React.FC = (props) => {
     <React.Fragment>
       <div id="sidebar-menu">
         <ul className="metismenu list-unstyled" id="side-menu">
-            {pageSections.map((section, index) => {
-              const menuItens = pages.filter(page => page.section === section.id)
-              if (menuItens.length > 0) {
-                return (
-                  <li key={index}>
-                    <Link to="/#" className="has-arrow waves-effect">
-                      <i className="bx bx-store" />
-                      <span>{ section.name }</span>
-                    </Link>
-                    <ul className="sub-menu" aria-expanded="false">
-                      {menuItens.map((item, index) => {
-                        return (<li key={index}><Link to={item.path}>{item.name}</Link></li>)
-                      })}
-                    </ul>
-                  </li>)
-              } else {
-                return null
-              }
-            })}
+          {pageSections.map((section, index) => {
+            const menuItens = section.subItens
+            if (menuItens.length > 1) {
+              return (
+                <li key={index}>
+                  <Link to="/#" className="has-arrow waves-effect">
+                    <i className={`fas ${section.icon} `}/>
+                    <span>{ section.name }</span>
+                  </Link>
+                  <ul className="sub-menu" aria-expanded="false">
+                    {menuItens.map((item, index) => {
+                      return (<li key={index}><Link to={item.path}>{item.name}</Link></li>)
+                    })}
+                  </ul>
+                </li>)
+            } else {
+              return (
+                <li>
+                  <Link to={menuItens[0].path} className=" waves-effect">
+                    <i className={`fas ${section.icon} `}/>
+                    <span>{ menuItens[0].name }</span>
+                  </Link>
+                </li>
+              )
+            }
+          })}
         </ul>
       </div>
     </React.Fragment>

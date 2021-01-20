@@ -9,6 +9,7 @@ import {
   deleteCategory
 } from '../../../../services/api/categories'
 import { Link } from 'react-router-dom'
+import { ConfirmAlertDialogProps, confirmAlertDialogDefault } from '../../../components/Feedbacks/AlertDialog'
 import { useFeedback } from '../../../context/FeedbackProvider'
 import PageContent from '../../../components/Common/PageContent'
 import PageCard from '../../../components/Common/PageCard'
@@ -16,15 +17,17 @@ import { Button, Input } from '../../../components/Form'
 import CircularProgress from '../../../components/Feedbacks/CircularProgress'
 import { Form } from '@unform/web'
 
-const AddCategory: React.FC = () => {
+const AddPostCategory: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const [categories, setCategories] = useState<CategoryData[]>([])
   const [loading, setLoading] = useState(false)
+  const [confirmAlertDialogData, setConfirmAlertDialogData] = useState<ConfirmAlertDialogProps>(confirmAlertDialogDefault)
   const { openToast } = useFeedback()
 
   const listCategories = useCallback(() => {
     listCategory((data) => {
       setCategories(data)
+      setConfirmAlertDialogData(confirmAlertDialogDefault)
     })
   }, [])
 
@@ -33,7 +36,14 @@ const AddCategory: React.FC = () => {
   }, [listCategories])
 
   const handleDeleteCategory = useCallback((categoryId: string) => {
-    deleteCategory(categoryId, () => listCategories())
+    setConfirmAlertDialogData({
+      ...confirmAlertDialogDefault,
+      titleText: 'Tem certeza que deseja excluir esta categoria?',
+      contentText: 'Atenção! Esta ação é irreversível',
+      open: true,
+      positiveAction: () => deleteCategory(categoryId, () => listCategories()),
+      negativeAction: () => setConfirmAlertDialogData(confirmAlertDialogDefault)
+    })
   }, [listCategories])
 
   const handleSubmit = useCallback(({ name }: CreateCategoryData) => {
@@ -50,6 +60,8 @@ const AddCategory: React.FC = () => {
       setLoading(false)
     })
   }, [openToast, categories])
+
+  console.log(confirmAlertDialogData)
 
   return (
     <PageContent>
@@ -96,14 +108,10 @@ const AddCategory: React.FC = () => {
                             Edit
                           </UncontrolledTooltip>
                         </Link>
-                        <Link to="#" className="text-danger" onClick={(e) => {
-                          e.preventDefault()
-                          console.log('delete category')
-                          handleDeleteCategory(category._id)
-                        }
-                        }>
+                        <Link to="#" className="text-danger">
                           <i className="mdi mdi-close font-size-18 mr-3" id="deletetooltip" />
-                          <UncontrolledTooltip placement="top" target="deletetooltip" style={hasProducts ? { opacity: 0.3, cursor: 'unset' } : {}}>
+                          <UncontrolledTooltip placement="top" target="deletetooltip" style={hasProducts ? { opacity: 0.3, cursor: 'unset' } : {}}
+                                               onClick={() => category.productCounter === 0 ? handleDeleteCategory(category._id) : null}>
                             Delete
                           </UncontrolledTooltip>
                         </Link>
@@ -121,4 +129,4 @@ const AddCategory: React.FC = () => {
   )
 }
 
-export default AddCategory
+export default AddPostCategory

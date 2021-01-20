@@ -1,7 +1,8 @@
-import index from './index'
 import { addProductQuantityInCategory, CategoryData } from './categories'
-import { uploadObjectOnS3 } from '../aws/upload-object'
+import { deleteObjectOnS3, uploadObjectOnS3 } from '../aws/upload-object'
 import { uuid } from 'uuidv4'
+import api from './index'
+import { apiRoutes } from '../../data/api-routes'
 
 export interface ProductData {
   name: string
@@ -27,7 +28,7 @@ export const createProduct = async (data: ProductDataRequest, file: File, callba
   const path = `uploads/images/products/${filename}`
   data.thumbImg = path
   try {
-    const response = await index.post('product', data)
+    const response = await api.post('product', data)
     await addProductQuantityInCategory(data.category)
     await uploadObjectOnS3(file, path)
     callback(response.data)
@@ -38,7 +39,7 @@ export const createProduct = async (data: ProductDataRequest, file: File, callba
 
 export const listProducts = async (callback: (data?: ProductDataResponse[], errorMessage?: string) => void): Promise<void> => {
   try {
-    const response = await index.get('product')
+    const response = await api.get('product')
     callback(response.data)
   } catch (error) {
     callback(undefined, error.response.message)
@@ -47,7 +48,7 @@ export const listProducts = async (callback: (data?: ProductDataResponse[], erro
 
 export const showProduct = async (id: string, callback: (data?: ProductDataResponse, errorMessage?: string) => void): Promise<void> => {
   try {
-    const response = await index.get(`product/i/${id}`)
+    const response = await api.get(`product/i/${id}`)
     callback(response.data)
   } catch (error) {
     callback(undefined, error.response.message)
@@ -66,7 +67,7 @@ export const updateProduct = async (data: ProductDataRequest, currentProduct: Pr
   }
 
   try {
-    const response = await index.put('product', { ...data, _id: currentProduct._id })
+    const response = await api.put('product', { ...data, _id: currentProduct._id })
     await addProductQuantityInCategory(data.category)
     if (file) {
       await uploadObjectOnS3(file, path)
@@ -74,5 +75,16 @@ export const updateProduct = async (data: ProductDataRequest, currentProduct: Pr
     callback(response.data)
   } catch (error) {
     callback(undefined, error.response.message)
+  }
+}
+
+export const deleteProduct = async (product: ProductDataResponse, callback: (errorMessage?: string) => void): Promise<void> => {
+  try {
+    deleteObjectOnS3(product.thumbImg, async () => {
+      await api.delete(`${apiRoutes.product}/${product._id}`)
+      callback()
+    })
+  } catch (error) {
+    console.log(error)
   }
 }

@@ -97,7 +97,6 @@ const Login: React.FC = () => {
                     <Input
                       name="email"
                       label="Email"
-                      value="admin@themesbrand.com"
                       className="form-control"
                       placeholder="Enter email"
                       type="email"
@@ -106,7 +105,6 @@ const Login: React.FC = () => {
                     <Input
                       name="password"
                       label="Password"
-                      value="123456"
                       type="password"
                       required
                       placeholder="Enter Password"
@@ -138,7 +136,7 @@ const Login: React.FC = () => {
                     <div className="mt-4 text-center">
                       <Link to="/forgot-password" className="text-muted">
                         <i className="mdi mdi-lock mr-1" />
-                        Forgot your password?
+                        Esqueceu a senha?
                       </Link>
                     </div>
                   </Form>

@@ -2,6 +2,7 @@ import api from './index'
 import { uuid } from 'uuidv4'
 import { uploadObjectOnS3 } from '../aws/upload-object'
 import imageCompression from 'browser-image-compression'
+import { apiRoutes } from '../../data/api-routes'
 
 export interface AdministratorData {
   _id: string
@@ -14,7 +15,7 @@ export interface AdministratorData {
 
 export const showAdministratorProfile = async (id: string, callback: (data?: AdministratorData, errorMessage?: string) => void): Promise<void> => {
   try {
-    const response = await api.get(`administrator/${id}`)
+    const response = await api.get(`${apiRoutes.administrator}/${id}`)
     callback(response.data)
   } catch (error) {
     callback(undefined, error)
@@ -24,7 +25,7 @@ export const showAdministratorProfile = async (id: string, callback: (data?: Adm
 export const updateAdministrator = async (data: AdministratorData, callback: (data?: AdministratorData, errorMessage?: string) => void): Promise<void> => {
   try {
     delete data.password
-    const response = await api.put('administrator', data)
+    const response = await api.put(`${apiRoutes.administrator}`, data)
     callback(response.data)
   } catch (error) {
     console.log(error.response)
@@ -46,7 +47,7 @@ export const updateProfilePhoto = async (data: AdministratorData, file: File, ca
   try {
     const compressedFile: File = await imageCompression(file, compressionOptions) as File
     await uploadObjectOnS3(compressedFile, path)
-    const response = await api.put('administrator', body)
+    const response = await api.put(`${apiRoutes.administrator}`, body)
     if (response) {
       callback(body)
     }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, CardBody, Col } from 'reactstrap'
+import { Card, CardBody, Col, UncontrolledTooltip } from 'reactstrap'
 import { s3BaseUrl } from '../../../../../services/aws/config'
 import { Link, useHistory } from 'react-router-dom'
 import { ProductDataResponse } from '../../../../../services/api/products'
@@ -53,6 +53,13 @@ const ProductItem: React.FC<ProductItemProps> = ({ product }) => {
               </span>
               <b>R$ {formatPrice(product.price)}</b>
             </h5>
+            <button className="text-danger">
+              <i className="mdi mdi-close font-size-18 mr-3" id="deletetooltip" />
+              <UncontrolledTooltip placement="top" target="deletetooltip"
+                                   onClick={() => {}}>
+                Delete
+              </UncontrolledTooltip>
+            </button>
           </div>
         </CardBody>
       </Card>
