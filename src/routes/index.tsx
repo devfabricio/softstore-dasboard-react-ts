@@ -7,6 +7,7 @@ import { useAuth } from '../views/context/AuthContext'
 import EditProfile from '../views/pages/Profile/EditProfile'
 import ChangePassword from '../views/pages/Profile/ChangePassword'
 import ChangeProfilePhoto from '../views/pages/Profile/ChangeProfilePhoto'
+import EditProduct from '../views/pages/Products/EditProduct'
 
 const Routes: React.FC = () => {
   const { administrator } = useAuth()
@@ -16,6 +17,7 @@ const Routes: React.FC = () => {
         {pages.map((page, index) => {
           return <Route key={index} path={page.path} isPrivate={page.isPrivate} exact component={page.component} />
         })}
+        <Route path={'/produto/:id'} exact isPrivate={true} component={EditProduct} />
         <Route path={'/perfil/editar'} isPrivate={true} exact component={EditProfile} />
         <Route path={'/perfil/alterar-senha'} isPrivate={true} exact component={ChangePassword} />
         <Route path={'/perfil/alterar-foto'} isPrivate={true} exact component={ChangeProfilePhoto} />

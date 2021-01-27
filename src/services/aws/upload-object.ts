@@ -18,15 +18,15 @@ export const uploadObjectOnS3 = async (file: File, key: string) => {
   }
 }
 
-export const deleteObjectOnS3 = async (imgUrl: string, callback: () => {}) => {
+export const deleteObjectOnS3 = async (imgUrl: string): Promise<void> => {
   try {
     const params = { Bucket: albumBucketName, Key: imgUrl }
     const s3Instance = new S3()
     s3Instance.deleteObject(params, function (err, data) {
       if (err) {
-        console.log(err)
+        return new Promise((resolve, reject) => reject(err))
       } else {
-        callback()
+        return new Promise(resolve => resolve({}))
       }
     })
   } catch (error) {

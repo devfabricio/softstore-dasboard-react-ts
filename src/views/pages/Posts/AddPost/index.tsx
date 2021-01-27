@@ -2,16 +2,15 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Form } from '@unform/web'
 import { Col, Row } from 'reactstrap'
 import { FormHandles } from '@unform/core'
-import { Input, Button, Select } from '../../../components/Form'
-import { ProductDataRequest } from '../../../../services/api/products'
+import { Input, Button, Select } from '../../../components/Common/Form'
 import { CategoryData, listCategory } from '../../../../services/api/categories'
-import { SelectOptionsTypes } from '../../../components/Form/Select'
+import { SelectOptionsTypes } from '../../../components/Common/Form/Select'
 import PageContent from '../../../components/Common/PageContent'
 import PageCard from '../../../components/Common/PageCard'
-import CircularProgress from '../../../components/Feedbacks/CircularProgress'
+import CircularProgress from '../../../components/Common/Feedbacks/CircularProgress'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import InputFile from '../../../components/Form/InputFile'
-import TextEditor from '../../../components/Form/TextEditor'
+import InputFile from '../../../components/Common/Form/InputFile'
+import TextEditor from '../../../components/Common/Form/TextEditor'
 
 const AddPost: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
@@ -28,7 +27,7 @@ const AddPost: React.FC = () => {
     listCategories()
   }, [listCategories])
 
-  const handleSubmit = useCallback((data: ProductDataRequest) => {
+  const handleSubmit = useCallback((data: any) => {
     setLoading(true)
   }, [])
 

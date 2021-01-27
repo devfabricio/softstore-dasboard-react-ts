@@ -1,97 +1,89 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import { Form } from '@unform/web'
 import { Col, Row } from 'reactstrap'
 import { FormHandles } from '@unform/core'
 import { useFeedback } from '../../../context/FeedbackProvider'
-import { Input, Button, TextAerea, Select } from '../../../components/Form'
-import { createProduct, ProductDataRequest } from '../../../../services/api/products'
-import { CategoryData, listCategory } from '../../../../services/api/categories'
-import { SelectOptionsTypes } from '../../../components/Form/Select'
-import InputCurrencyMask from '../../../components/Form/InputCurrencyMask'
+import { Button, Select } from '../../../components/Common/Form'
+import { createProduct, ProductData } from '../../../../services/api/products'
 import PageContent from '../../../components/Common/PageContent'
 import PageCard from '../../../components/Common/PageCard'
-import PageDropzone from '../../../components/Common/PageDropzone'
-import CircularProgress from '../../../components/Feedbacks/CircularProgress'
+import AddSpecifications from '../../../components/Products/FormSections/AddSpecifications'
+import AddCustomizedText from '../../../components/Products/FormSections/AddCustomizedText'
+import PriceFormSection from '../../../components/Products/FormSections/PriceFormSection'
+import StockFormSection from '../../../components/Products/FormSections/StockFormSection'
+import ShippingFormSection from '../../../components/Products/FormSections/ShippingFormSection'
+import ProductDetailsFormSection from '../../../components/Products/FormSections/ProductDetailsFormSection'
+import CustomizedImageFormSection from '../../../components/Products/FormSections/CustomizedImagesFormSection'
+import ProductPhotosFormSection from '../../../components/Products/FormSections/ProductPhotosFormSection'
 
 type AcceptedFile = {file: File, formattedSize: string, preview: string}
 
 const AddProduct: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
-  const [categories, setCategories] = useState<CategoryData[]>([])
-  const [loading, setLoading] = useState(false)
   const [acceptedFiles, setAcceptedFiles] = useState<AcceptedFile[]>([])
-  const { openToast } = useFeedback()
+  const { openToast, showBackdrop, dismissBackdrop } = useFeedback()
 
-  const listCategories = useCallback(() => {
-    listCategory((data) => {
-      setCategories(data)
-    })
-  }, [])
+  const formValidation = useCallback((data: ProductData): boolean => {
+    const { name, description, category } = data
+    if (name.length === 0) {
+      openToast('Você precisa adicionar um nome para o produto', 'error')
+      return false
+    }
+    if (description.length === 0) {
+      openToast('Você precisa adicionar uma descrição para o produto', 'error')
+      return false
+    }
+    if (category[0].length === 0) {
+      openToast('Você precisa adicionar uma categoria para o produto', 'error')
+      return false
+    }
+    return true
+  }, [openToast])
 
-  useEffect(() => {
-    listCategories()
-  }, [listCategories])
-
-  const handleSubmit = useCallback((data: ProductDataRequest) => {
+  const handleSubmit = useCallback((data: ProductData) => {
     const acceptedFile = acceptedFiles[0]
-    if (acceptedFile) {
-      setLoading(true)
-      createProduct(data, acceptedFile.file, (product, errorMessage) => {
-        if (product) {
-          setLoading(false)
-          openToast('Produto adicionado com sucesso!', 'success')
-        }
-        if (errorMessage) openToast(errorMessage, 'error')
-      })
+    if (formValidation(data)) {
+      if (acceptedFile) {
+        showBackdrop()
+        createProduct(data, acceptedFile.file, (product, errorMessage) => {
+          if (product) {
+            dismissBackdrop()
+            openToast('Produto adicionado com sucesso!', 'success')
+          }
+          if (errorMessage) openToast(errorMessage, 'error')
+        })
+      }
     }
-  }, [acceptedFiles, openToast])
-
-  const selectOptions = useCallback(() : SelectOptionsTypes[] => {
-    const optionsList: SelectOptionsTypes[] = []
-    for (const cat of categories) {
-      optionsList.push({ key: cat.name, value: cat._id })
-    }
-    return optionsList
-  }, [categories])
-
-  const formatBytes = useCallback((bytes, decimals = 2) => {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const dm = decimals < 0 ? 0 : decimals
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
-  }, [])
-
-  const handleAcceptedFiles = useCallback((files: File[]) => {
-    files.map(file => {
-      return setAcceptedFiles(arr => [...arr, { file, preview: URL.createObjectURL(file), formattedSize: formatBytes(file.size) }])
-    })
-  }, [formatBytes])
+  }, [acceptedFiles, dismissBackdrop, formValidation, openToast, showBackdrop])
 
   return (
     <PageContent>
-      <PageCard title={'Novo Produto'} description={'Insira as informações abaixo para adicionar o produto'}>
-        <Form ref={formRef} action="#" onSubmit={handleSubmit}>
-          <Row>
-            <Col sm="6">
-              <Input name={'name'} type="text" id="username" label={'Nome'} className="form-control" />
-              <Select name={'category'} labelText={'Escolha uma categoria'} options={selectOptions()} className="form-control select2" />
-              <InputCurrencyMask name={'price'} labelText={'Preço'} defaultValue={0} />
-              <InputCurrencyMask name={'oldPrice'} labelText={'Preço Antigo'} defaultValue={0} />
-            </Col>
-            <Col sm="6">
-              <TextAerea name={'description'} id="username" labelText={'Descrição'} className="form-control" rows={5} />
-            </Col>
-          </Row>
-          {loading && <CircularProgress />}
-          {!loading && <Button type="submit" color="primary" className="mr-1 waves-effect waves-light"> Adicionar Produto </Button>}
-        </Form>
-      </PageCard>
-      <PageCard title={'Fotos'} description={'Fotos dos produtos'}>
-        <PageDropzone handleAcceptedFiles={handleAcceptedFiles} acceptedFiles={acceptedFiles} />
-      </PageCard>
+      <Form ref={formRef} action="#" onSubmit={handleSubmit}>
+      <Row>
+        <Col sm="9">
+          <ProductDetailsFormSection formRef={formRef} />
+          <ProductPhotosFormSection acceptedFiles={acceptedFiles} setAcceptedFiles={setAcceptedFiles} />
+          <StockFormSection />
+          <AddSpecifications />
+          <AddCustomizedText />
+          <CustomizedImageFormSection />
+        </Col>
+        <Col sm="3">
+          <div className={'d-flex flex-column-reverse'}>
+            <ShippingFormSection />
+            <PriceFormSection />
+            <PageCard title={'Publicar'} description={'Publique seu produto ou salve como rascunho'}>
+              <Select name={'status'}
+                      options={[
+                        { key: 'Salvar como Rascunho', value: 'draft' },
+                        { key: 'Publicar Produto', value: 'published' }]} className="form-control select2" />
+              <Button type="submit" color="primary" style={{ width: '100%' }}
+                      className="btn btn-primary mr-1 waves-effect waves-light"> Pronto </Button>
+            </PageCard>
+          </div>
+        </Col>
+      </Row>
+      </Form>
     </PageContent>
   )
 }

@@ -1,30 +1,54 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { FormHandles } from '@unform/core'
-import { Col, Row, Table, UncontrolledTooltip } from 'reactstrap'
+import { Col, Row, Table } from 'reactstrap'
 import {
-  listCategory,
   createCategory,
-  CategoryData,
   CreateCategoryData,
   deleteCategory
 } from '../../../../services/api/categories'
-import { Link } from 'react-router-dom'
 import { useFeedback } from '../../../context/FeedbackProvider'
 import PageContent from '../../../components/Common/PageContent'
 import PageCard from '../../../components/Common/PageCard'
-import { Button, Input } from '../../../components/Form'
-import CircularProgress from '../../../components/Feedbacks/CircularProgress'
+import { Button, Input, Select } from '../../../components/Common/Form'
+import CircularProgress from '../../../components/Common/Feedbacks/CircularProgress'
 import { Form } from '@unform/web'
+import { CategoryRelationshipResponse, listCategoryRelationship } from '../../../../services/api/category-relationship'
+import { SelectOptionsTypes } from '../../../components/Common/Form/Select'
+import CategoryTableRow from './CategoryTableRow'
 
 const AddCategory: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
-  const [categories, setCategories] = useState<CategoryData[]>([])
+  const [categoriesRelationship, setCategoriesRelationship] = useState<CategoryRelationshipResponse[]>([])
   const [loading, setLoading] = useState(false)
   const { openToast } = useFeedback()
 
+  const orderCategoriesRelationship = (data: CategoryRelationshipResponse[]) => {
+    const arr: CategoryRelationshipResponse[] = []
+    const noParents = data.filter(catRel => !catRel.parent)
+
+    const orderParents = (parentCategoryRelationship: CategoryRelationshipResponse, level: number) => {
+      parentCategoryRelationship.level = level
+      arr.push(parentCategoryRelationship)
+      const children = data.filter(catRel => catRel.parent?._id === parentCategoryRelationship.category._id)
+      for (const categoryRelationship of children) {
+        if (data.filter(catRel => catRel.parent?._id === categoryRelationship._id)) {
+          orderParents(categoryRelationship, level + 1)
+        } else {
+          categoryRelationship.level = level + 1
+          arr.push(categoryRelationship)
+        }
+      }
+    }
+    for (const categoryRelationship of noParents) {
+      orderParents(categoryRelationship, 0)
+    }
+    console.log(arr)
+    setCategoriesRelationship(arr)
+  }
+
   const listCategories = useCallback(() => {
-    listCategory((data) => {
-      setCategories(data)
+    listCategoryRelationship((data) => {
+      orderCategoriesRelationship(data)
     })
   }, [])
 
@@ -36,12 +60,22 @@ const AddCategory: React.FC = () => {
     deleteCategory(categoryId, () => listCategories())
   }, [listCategories])
 
-  const handleSubmit = useCallback(({ name }: CreateCategoryData) => {
+  const selectOptions = useCallback(() : SelectOptionsTypes[] => {
+    const optionsList: SelectOptionsTypes[] = []
+    optionsList.push({ key: 'Nenhum', value: 'none' })
+    for (const cat of categoriesRelationship) {
+      optionsList.push({ key: cat.category.name, value: cat.category._id })
+    }
+    return optionsList
+  }, [categoriesRelationship])
+
+  const handleSubmit = useCallback((data: CreateCategoryData) => {
     setLoading(true)
-    createCategory({ name }, (data, errorMessage) => {
+    const categoryData: CreateCategoryData = { name: data.name }
+    if (data.parent !== 'none') categoryData.parent = data.parent
+    createCategory(categoryData, (data, errorMessage) => {
       if (data) {
-        categories.push(data)
-        setCategories(categories)
+        listCategories()
         formRef.current?.clearField('name')
         openToast('Categoria criada com sucesso', 'success')
       }
@@ -49,7 +83,7 @@ const AddCategory: React.FC = () => {
 
       setLoading(false)
     })
-  }, [openToast, categories])
+  }, [listCategories, openToast])
 
   return (
     <PageContent>
@@ -60,10 +94,11 @@ const AddCategory: React.FC = () => {
               <Row>
                 <Col sm="12">
                   <Input name={'name'} type="text" id="username" label={'Nome'} />
+                  <Select name={'parent'} labelText={'Categoria ascendente'} options={selectOptions()} className="form-control select2" />
                 </Col>
               </Row>
               {loading && <CircularProgress />}
-              {!loading && <Button type="submit" color="primary" className="mr-1 waves-effect waves-light"> Adicionar Categoria </Button>}
+              {!loading && <Button type="submit" color="primary" className="btn btn-primary mr-1 waves-effect waves-light"> Adicionar Categoria </Button>}
             </Form>
           </PageCard>
         </Col>
@@ -81,35 +116,15 @@ const AddCategory: React.FC = () => {
                 </tr>
                 </thead>
                 <tbody>
-                {categories.map((category, index) => {
-                  const hasProducts = category.productCounter > 0
+                {categoriesRelationship.map((categoryRelationship, index) => {
+                  const category = categoryRelationship.category
                   return (
-                    <tr key={category._id}>
-                      <td>{index + 1}</td>
-                      <td><Link to={''}>{category.name}</Link></td>
-                      <td>{category.slug}</td>
-                      <td>{category.productCounter}</td>
-                      <td>
-                        <Link to={`/categoria/${category._id}`} className="mr-3 text-primary">
-                          <i className="mdi mdi-pencil font-size-18 mr-3" id="edittooltip" />
-                          <UncontrolledTooltip placement="top" target="edittooltip">
-                            Edit
-                          </UncontrolledTooltip>
-                        </Link>
-                        <Link to="#" className="text-danger" onClick={(e) => {
-                          e.preventDefault()
-                          console.log('delete category')
-                          handleDeleteCategory(category._id)
-                        }
-                        }>
-                          <i className="mdi mdi-close font-size-18 mr-3" id="deletetooltip" />
-                          <UncontrolledTooltip placement="top" target="deletetooltip" style={hasProducts ? { opacity: 0.3, cursor: 'unset' } : {}}>
-                            Delete
-                          </UncontrolledTooltip>
-                        </Link>
-                      </td>
-                    </tr>
-                  )
+                      <>
+                        <CategoryTableRow categoryRelationship={categoryRelationship}
+                                          category={category}
+                                          handleDeleteCategory={handleDeleteCategory}
+                                          index={index} />
+                      </>)
                 })}
                 </tbody>
               </Table>

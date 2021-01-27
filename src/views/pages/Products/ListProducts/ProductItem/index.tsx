@@ -47,7 +47,7 @@ const ProductItem: React.FC<ProductItemProps> = ({ product }) => {
                 {product.name}{' '}
               </Link>
             </h5>
-            <span className={'product-category'}>{product.category.name}</span>
+            <span className={'product-category'}>{''}</span>
             <h5 className="my-0">
               <span className="text-muted mr-2">
               </span>

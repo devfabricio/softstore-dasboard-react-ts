@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import PageContent from '../../../components/Common/PageContent'
 import PageCard from '../../../components/Common/PageCard'
 import { Col, Row } from 'reactstrap'
-import { Button } from '../../../components/Form'
+import { Button } from '../../../components/Common/Form'
 import BootstrapTable from 'react-bootstrap-table-next'
 import paginationFactory, {
   PaginationListStandalone,

@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from 'react'
-import Toast, { ToastData, ToastTypes, toastDefaultData } from '../components/Feedbacks/Toast'
+import Toast, { ToastData, ToastTypes, toastDefaultData } from '../components/Common/Feedbacks/Toast'
 import Backdrop from '@material-ui/core/Backdrop'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'

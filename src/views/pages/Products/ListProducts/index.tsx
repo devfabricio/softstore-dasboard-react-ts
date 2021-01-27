@@ -3,7 +3,7 @@ import {
   Col,
   Row, Table, UncontrolledTooltip
 } from 'reactstrap'
-import { deleteProduct, listProducts, ProductDataResponse } from '../../../../services/api/products'
+import { deleteProduct, listProducts as list, ProductDataResponse } from '../../../../services/api/products'
 import PageCard from '../../../components/Common/PageCard'
 import { Link } from 'react-router-dom'
 import PageContent from '../../../components/Common/PageContent'
@@ -31,8 +31,8 @@ const ListProducts: React.FC = () => {
     }
   }, [currentProduct, dismissBackdrop, openToast, showBackdrop])
 
-  const listCategories = useCallback(() => {
-    listProducts((data) => {
+  const listProducts = useCallback(() => {
+    list((data) => {
       if (data) {
         console.log(data)
         setProducts(data)
@@ -41,8 +41,8 @@ const ListProducts: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    listCategories()
-  }, [listCategories])
+    listProducts()
+  }, [listProducts])
 
   return (
     <PageContent>
@@ -70,12 +70,12 @@ const ListProducts: React.FC = () => {
                         <Link to={''}>{product.name}</Link>
                       </td>
                       <td>R$ {formatPrice(product.price)}</td>
-                      <td>{product.category.name}</td>
+                      <td></td>
                       <td>
-                        <Link to={`/categoria/${product._id}`} className="mr-3 text-primary">
+                        <Link to={`/produto/${product._id}`} className="mr-3 text-primary">
                           <i className="mdi mdi-pencil font-size-18 mr-3" id="edittooltip" />
                           <UncontrolledTooltip placement="top" target="edittooltip">
-                            Edit
+                            Editar
                           </UncontrolledTooltip>
                         </Link>
                         <Link to="#" className="text-danger" onClick={(e) => {
@@ -85,7 +85,7 @@ const ListProducts: React.FC = () => {
                         }}>
                           <i className="mdi mdi-close font-size-18 mr-3" id="deletetooltip" />
                           <UncontrolledTooltip placement="top" target="deletetooltip">
-                            Delete
+                            Excluir
                           </UncontrolledTooltip>
                         </Link>
                         {showConfirmDelete && <SweetAlert

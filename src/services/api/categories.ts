@@ -9,6 +9,7 @@ export interface CategoryData {
 
 export interface CreateCategoryData {
   name: string
+  parent?: string
 }
 
 const categoryUrl = 'category'
@@ -25,9 +26,9 @@ export const listCategory = async (callback: (data: CategoryData[]) => void): Pr
   callback(response.data)
 }
 
-export const createCategory = async ({ name }: CreateCategoryData, callback: (data?: CategoryData, errorMessage?: string) => void): Promise<void> => {
+export const createCategory = async (data: CreateCategoryData, callback: (data?: CategoryData, errorMessage?: string) => void): Promise<void> => {
   try {
-    const response = await api.post(categoryUrl, { name })
+    const response = await api.post(categoryUrl, data)
     callback(response.data)
   } catch (error) {
     const message = messages.find(message => message.original === error.response.data.message)

@@ -2,30 +2,30 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { FormHandles } from '@unform/core'
 import { Col, Row, Table, UncontrolledTooltip } from 'reactstrap'
 import {
-  listCategory,
   createCategory,
-  CategoryData,
   CreateCategoryData,
   deleteCategory
 } from '../../../../services/api/categories'
 import { Link } from 'react-router-dom'
-import { ConfirmAlertDialogProps, confirmAlertDialogDefault } from '../../../components/Feedbacks/AlertDialog'
+import { ConfirmAlertDialogProps, confirmAlertDialogDefault } from '../../../components/Common/Feedbacks/AlertDialog'
 import { useFeedback } from '../../../context/FeedbackProvider'
 import PageContent from '../../../components/Common/PageContent'
 import PageCard from '../../../components/Common/PageCard'
-import { Button, Input } from '../../../components/Form'
-import CircularProgress from '../../../components/Feedbacks/CircularProgress'
+import { Button, Input, Select } from '../../../components/Common/Form'
+import CircularProgress from '../../../components/Common/Feedbacks/CircularProgress'
 import { Form } from '@unform/web'
+import { CategoryRelationshipResponse, listCategoryRelationship } from '../../../../services/api/category-relationship'
+import { SelectOptionsTypes } from '../../../components/Common/Form/Select'
 
 const AddPostCategory: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
-  const [categories, setCategories] = useState<CategoryData[]>([])
+  const [categories, setCategories] = useState<CategoryRelationshipResponse[]>([])
   const [loading, setLoading] = useState(false)
   const [confirmAlertDialogData, setConfirmAlertDialogData] = useState<ConfirmAlertDialogProps>(confirmAlertDialogDefault)
   const { openToast } = useFeedback()
 
   const listCategories = useCallback(() => {
-    listCategory((data) => {
+    listCategoryRelationship((data) => {
       setCategories(data)
       setConfirmAlertDialogData(confirmAlertDialogDefault)
     })
@@ -34,6 +34,15 @@ const AddPostCategory: React.FC = () => {
   useEffect(() => {
     listCategories()
   }, [listCategories])
+
+  const selectOptions = useCallback(() : SelectOptionsTypes[] => {
+    const optionsList: SelectOptionsTypes[] = []
+    optionsList.push({ key: 'Nenhuma', value: 'none' })
+    for (const cat of categories) {
+      optionsList.push({ key: cat.category.name, value: cat.category._id })
+    }
+    return optionsList
+  }, [categories])
 
   const handleDeleteCategory = useCallback((categoryId: string) => {
     setConfirmAlertDialogData({
@@ -46,12 +55,15 @@ const AddPostCategory: React.FC = () => {
     })
   }, [listCategories])
 
-  const handleSubmit = useCallback(({ name }: CreateCategoryData) => {
+  const handleSubmit = useCallback((data: CreateCategoryData) => {
     setLoading(true)
-    createCategory({ name }, (data, errorMessage) => {
+    const categoryData: CreateCategoryData = { name: data.name }
+    if (data.parent !== 'none') {
+      categoryData.parent = data.parent
+    }
+    createCategory(data, (data, errorMessage) => {
       if (data) {
-        categories.push(data)
-        setCategories(categories)
+        listCategories()
         formRef.current?.clearField('name')
         openToast('Categoria criada com sucesso', 'success')
       }
@@ -59,7 +71,7 @@ const AddPostCategory: React.FC = () => {
 
       setLoading(false)
     })
-  }, [openToast, categories])
+  }, [openToast, listCategories])
 
   console.log(confirmAlertDialogData)
 
@@ -72,10 +84,11 @@ const AddPostCategory: React.FC = () => {
               <Row>
                 <Col sm="12">
                   <Input name={'name'} type="text" id="username" label={'Nome'} />
+                  <Select name={'parent'} labelText={'Categoria Ascendente'} options={selectOptions()} className="form-control select2" />
                 </Col>
               </Row>
               {loading && <CircularProgress />}
-              {!loading && <Button type="submit" color="primary" className="mr-1 waves-effect waves-light"> Adicionar Categoria </Button>}
+              {!loading && <Button type="submit" color="primary" className="btn btn-primary mr-1 waves-effect waves-light"> Adicionar Categoria </Button>}
             </Form>
           </PageCard>
         </Col>
@@ -93,10 +106,11 @@ const AddPostCategory: React.FC = () => {
                 </tr>
                 </thead>
                 <tbody>
-                {categories.map((category, index) => {
-                  const hasProducts = category.productCounter > 0
+                {categories.map((categoryRelationship, index) => {
+                  const hasProducts = categoryRelationship.count > 0
+                  const category = categoryRelationship.category
                   return (
-                    <tr key={category._id}>
+                    <tr key={categoryRelationship._id}>
                       <td>{index + 1}</td>
                       <td><Link to={''}>{category.name}</Link></td>
                       <td>{category.slug}</td>

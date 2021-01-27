@@ -76,7 +76,7 @@ const SidebarContent: React.FC = (props) => {
                 </li>)
             } else {
               return (
-                <li>
+                <li key={index}>
                   <Link to={menuItens[0].path} className=" waves-effect">
                     <i className={`fas ${section.icon} `}/>
                     <span>{ menuItens[0].name }</span>
