@@ -12,7 +12,6 @@ import AddPostCategory from '../views/pages/Posts/AddCategory'
 import OrderList from '../views/pages/Orders/OrderList'
 import Chat from '../views/pages/Chat'
 import AddCustomizedImage from '../views/pages/Products/AddCustomizedImage'
-import EditProduct from "../views/pages/Products/EditProduct";
 
 interface PageData {
   name: string,

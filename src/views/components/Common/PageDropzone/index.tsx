@@ -1,16 +1,23 @@
 import React from 'react'
 import Dropzone from 'react-dropzone'
-import { Card, Col, Row } from 'reactstrap'
-import { Link } from 'react-router-dom'
-
-type AcceptedFile = {file: File, formattedSize: string, preview: string}
+import { ProductPhotoResponse } from '../../../../services/api/product-photo'
+import ImagePreview from './image-preview'
+import { AcceptedFile } from '../../../../utils/format-files'
+import { s3BaseUrl } from '../../../../services/aws/config'
+import { ProductDataResponse } from '../../../../services/api/products'
 
 interface PageDropzoneProps {
   handleAcceptedFiles: (files: File[]) => void
+  handleDeleteAcceptedFiles: (fileIndex: number) => void
   acceptedFiles: AcceptedFile[]
+  productPhotos?: ProductPhotoResponse[]
+  product?: ProductDataResponse
 }
 
-const PageDropzone: React.FC<PageDropzoneProps> = ({ handleAcceptedFiles, acceptedFiles }) => {
+const PageDropzone: React.FC<PageDropzoneProps> = ({
+  handleAcceptedFiles, handleDeleteAcceptedFiles,
+  acceptedFiles, product, productPhotos = []
+}) => {
   return (<>
     <Dropzone
       onDrop={acceptedFiles => {
@@ -18,7 +25,7 @@ const PageDropzone: React.FC<PageDropzoneProps> = ({ handleAcceptedFiles, accept
       }}
     >
       {({ getRootProps, getInputProps }) => (
-        <div className="dropzone">
+        <div className="dropzone" style={{ cursor: 'pointer' }}>
           <div
             className="dz-message needsclick"
             {...getRootProps()}
@@ -28,44 +35,30 @@ const PageDropzone: React.FC<PageDropzoneProps> = ({ handleAcceptedFiles, accept
               <div className="mb-3">
                 <i className="display-4 text-muted bx bxs-cloud-upload" />
               </div>
-              <h4>Drop files here or click to upload.</h4>
+              <h4 style={{ fontSize: '0.9rem' }}>Clique aqui ou arraste as imagens para cá.</h4>
             </div>
           </div>
         </div>
       )}
     </Dropzone>
     <div className="dropzone-previews mt-3" id="file-previews">
+      {productPhotos.map((photo, i) => {
+        return (
+          <ImagePreview key={photo._id}
+                        imgName={photo.path === product?.thumbImg ? 'Capa Principal' : `Foto ${i}`}
+                        imgUrl={`${s3BaseUrl}/${photo.thumbPath}`}
+                        index={i}
+                        handleDeleteAcceptedFiles={handleDeleteAcceptedFiles} />
+        )
+      })}
       {acceptedFiles.map((f, i) => {
         return (
-          <Card
-            className="mt-1 mb-0 shadow-none border dz-processing dz-image-preview dz-success dz-complete"
-            key={i + '-file'}
-          >
-            <div className="p-2">
-              <Row className="align-items-center">
-                <Col className="col-auto">
-                  <img
-                    data-dz-thumbnail=""
-                    height="80"
-                    className="avatar-sm rounded bg-light"
-                    alt={f.file.name}
-                    src={f.preview}
-                  />
-                </Col>
-                <Col>
-                  <Link
-                    to="#"
-                    className="text-muted font-weight-bold"
-                  >
-                    {f.file.name}
-                  </Link>
-                  <p className="mb-0">
-                    <strong>{f.formattedSize}</strong>
-                  </p>
-                </Col>
-              </Row>
-            </div>
-          </Card>
+          <ImagePreview key={f.id}
+                        imgName={f.file.name}
+                        imgUrl={f.preview}
+                        size={f.formattedSize}
+                        index={f.id}
+                        handleDeleteAcceptedFiles={handleDeleteAcceptedFiles} />
         )
       })}
     </div>

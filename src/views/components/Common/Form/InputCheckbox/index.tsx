@@ -5,15 +5,12 @@ export interface CheckboxOptionsInterface {
   id: string
   value: string
   label: string
+  checked: boolean
 }
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
-  options: {
-    id: string;
-    value: string;
-    label: string;
-  }[];
+  options: CheckboxOptionsInterface[];
 }
 const InputCheckbox: React.FC<Props> = ({ name, options, ...rest }) => {
   const inputRefs = useRef<HTMLInputElement[]>([])
@@ -45,7 +42,7 @@ const InputCheckbox: React.FC<Props> = ({ name, options, ...rest }) => {
         <div key={option.id} className="form-check form-check-inline">
           <input
             className="form-check-input"
-            defaultChecked={defaultValue.find((dv: string) => dv === option.id)}
+            defaultChecked={option.checked}
             ref={ref => {
               inputRefs.current[index] = ref as HTMLInputElement
             }}

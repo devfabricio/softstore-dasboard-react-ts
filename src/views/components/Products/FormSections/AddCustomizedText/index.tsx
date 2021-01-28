@@ -1,15 +1,53 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Col, Row } from 'reactstrap'
 import { Button, Input } from '../../../Common/Form'
 import PageCard from '../../../Common/PageCard'
+import {
+  listProductCustomizedTexts,
+  ProductCustomizedTextResponse
+} from '../../../../../services/api/product-customized-text'
+import { ProductDataResponse } from '../../../../../services/api/products'
 
-const AddCustomizedText: React.FC = () => {
-  const [rows1, setrows1] = useState<any>([])
+interface CustomizedTextFields {
+  name: string
+}
+
+interface AddCustomizedTextProps {
+  product?: ProductDataResponse
+}
+
+const AddCustomizedText: React.FC<AddCustomizedTextProps> = ({ product }) => {
+  const [rows1, setrows1] = useState<CustomizedTextFields[]>([])
+  const [customizedTexts, setCustomizedTexts] = useState<ProductCustomizedTextResponse[]>([])
 
   function handleAddRowNested () {
-    const item1 = { name1: '' }
+    const item1: CustomizedTextFields = { name: '' }
     setrows1([...rows1, item1])
   }
+
+  const listCustomizedTexts = useCallback(() => {
+    if (product) {
+      listProductCustomizedTexts(product._id, (data, errorMessage) => {
+        if (data) {
+          setCustomizedTexts(data)
+        }
+      })
+    }
+  }, [product])
+
+  useEffect(() => {
+    listCustomizedTexts()
+  }, [listCustomizedTexts])
+
+  useEffect(() => {
+    const customizedTextFields: CustomizedTextFields[] = []
+    if (customizedTextFields.length > 1) {
+      for (const customizedText of customizedTexts.slice(1, customizedTexts.length)) {
+        customizedTextFields.push({ name: customizedText.label })
+      }
+    }
+    setrows1(rows => [...rows, ...customizedTextFields])
+  }, [customizedTexts])
 
   return (
     <PageCard title={'Textos Personalizados'}
@@ -26,6 +64,7 @@ const AddCustomizedText: React.FC = () => {
                       <Input
                         name={'productCustomizedText[0]'}
                         type="text"
+                        defaultValue={customizedTexts[0] ? customizedTexts[0].label : ''}
                         className="inner form-control"
                         label={'Nome do campo para preenchimento do cliente'}
                       />

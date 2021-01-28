@@ -1,6 +1,6 @@
 import { uuid } from 'uuidv4'
 
-export type AcceptedFile = {file: File, formattedSize: string, preview: string}
+export type AcceptedFile = {id: number, file: File, formattedSize: string, preview: string}
 
 const formatBytes = (bytes: number, decimals = 2) => {
   if (bytes === 0) return '0 Bytes'
@@ -14,8 +14,11 @@ const formatBytes = (bytes: number, decimals = 2) => {
 
 export const getAcceptedFiles = (files: File[]): AcceptedFile[] => {
   const arr: AcceptedFile[] = []
+  let index = 0
   for (const file of files) {
-    arr.push({ file, preview: URL.createObjectURL(file), formattedSize: formatBytes(file.size) })
+    const id = Math.floor((Math.random() * 10000) + 1)
+    arr.push({ id: Number(`${index}${id}`), file, preview: URL.createObjectURL(file), formattedSize: formatBytes(file.size) })
+    index++
   }
   return arr
 }

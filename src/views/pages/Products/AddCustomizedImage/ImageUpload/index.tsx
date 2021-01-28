@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react'
-import PageDropzone from '../../../../components/Common/PageDropzone'
 import { Progress } from 'reactstrap'
 import CircularProgress from '../../../../components/Common/Feedbacks/CircularProgress'
 import { Button } from '../../../../components/Common/Form'
 import PageCard from '../../../../components/Common/PageCard'
-import { AcceptedFile, getAcceptedFiles } from '../../../../../utils/format-files'
+import { AcceptedFile } from '../../../../../utils/format-files'
 import { createCustomizedImage } from '../../../../../services/api/customized-images'
 import { useFeedback } from '../../../../context/FeedbackProvider'
+import ProductPhotosFormSection from '../../../../components/Products/FormSections/ProductPhotosFormSection'
 
 interface ImageUploadProps {
   listImages: () => void
@@ -17,11 +17,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ listImages }) => {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [acceptedFiles, setAcceptedFiles] = useState<AcceptedFile[]>([])
   const { openToast } = useFeedback()
-
-  const handleAcceptedFiles = useCallback(async (files: File[]) => {
-    const acceptedFilesArr = getAcceptedFiles(files)
-    setAcceptedFiles(arr => [...arr, ...acceptedFilesArr])
-  }, [])
 
   const handleSubmit = useCallback(() => {
     setLoading(true)
@@ -42,7 +37,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ listImages }) => {
   }, [acceptedFiles, listImages, openToast])
 
   return (<PageCard title={'Fotos'} description={'Fotos dos produtos'}>
-    <PageDropzone handleAcceptedFiles={handleAcceptedFiles} acceptedFiles={acceptedFiles} />
+    <ProductPhotosFormSection acceptedFiles={acceptedFiles} setAcceptedFiles={setAcceptedFiles} />
     <div className={'mt-3'}>
       {loading &&
       <>

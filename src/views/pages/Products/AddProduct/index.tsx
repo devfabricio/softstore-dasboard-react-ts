@@ -4,7 +4,7 @@ import { Col, Row } from 'reactstrap'
 import { FormHandles } from '@unform/core'
 import { useFeedback } from '../../../context/FeedbackProvider'
 import { Button, Select } from '../../../components/Common/Form'
-import { createProduct, ProductData } from '../../../../services/api/products'
+import { createProduct, CreateProductData, ProductData } from '../../../../services/api/products'
 import PageContent from '../../../components/Common/PageContent'
 import PageCard from '../../../components/Common/PageCard'
 import AddSpecifications from '../../../components/Products/FormSections/AddSpecifications'
@@ -15,8 +15,7 @@ import ShippingFormSection from '../../../components/Products/FormSections/Shipp
 import ProductDetailsFormSection from '../../../components/Products/FormSections/ProductDetailsFormSection'
 import CustomizedImageFormSection from '../../../components/Products/FormSections/CustomizedImagesFormSection'
 import ProductPhotosFormSection from '../../../components/Products/FormSections/ProductPhotosFormSection'
-
-type AcceptedFile = {file: File, formattedSize: string, preview: string}
+import { AcceptedFile } from '../../../../utils/format-files'
 
 const AddProduct: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
@@ -37,22 +36,23 @@ const AddProduct: React.FC = () => {
       openToast('Você precisa adicionar uma categoria para o produto', 'error')
       return false
     }
+    if (acceptedFiles.length === 0) {
+      openToast('Você deve adicionar pelo menos uma foto no produto', 'error')
+      return false
+    }
     return true
-  }, [openToast])
+  }, [acceptedFiles, openToast])
 
-  const handleSubmit = useCallback((data: ProductData) => {
-    const acceptedFile = acceptedFiles[0]
+  const handleSubmit = useCallback((data: CreateProductData) => {
     if (formValidation(data)) {
-      if (acceptedFile) {
-        showBackdrop()
-        createProduct(data, acceptedFile.file, (product, errorMessage) => {
-          if (product) {
-            dismissBackdrop()
-            openToast('Produto adicionado com sucesso!', 'success')
-          }
-          if (errorMessage) openToast(errorMessage, 'error')
-        })
-      }
+      showBackdrop()
+      createProduct(data, acceptedFiles, (product, errorMessage) => {
+        if (product) {
+          dismissBackdrop()
+          openToast('Produto adicionado com sucesso!', 'success')
+        }
+        if (errorMessage) openToast(errorMessage, 'error')
+      })
     }
   }, [acceptedFiles, dismissBackdrop, formValidation, openToast, showBackdrop])
 
@@ -62,7 +62,6 @@ const AddProduct: React.FC = () => {
       <Row>
         <Col sm="9">
           <ProductDetailsFormSection formRef={formRef} />
-          <ProductPhotosFormSection acceptedFiles={acceptedFiles} setAcceptedFiles={setAcceptedFiles} />
           <StockFormSection />
           <AddSpecifications />
           <AddCustomizedText />
@@ -70,6 +69,7 @@ const AddProduct: React.FC = () => {
         </Col>
         <Col sm="3">
           <div className={'d-flex flex-column-reverse'}>
+            <ProductPhotosFormSection acceptedFiles={acceptedFiles} setAcceptedFiles={setAcceptedFiles} />
             <ShippingFormSection />
             <PriceFormSection />
             <PageCard title={'Publicar'} description={'Publique seu produto ou salve como rascunho'}>

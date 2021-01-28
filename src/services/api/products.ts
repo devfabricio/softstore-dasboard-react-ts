@@ -1,7 +1,14 @@
 import { deleteObjectOnS3, uploadObjectOnS3 } from '../aws/upload-object'
-import { uuid } from 'uuidv4'
 import api from './index'
 import { apiRoutes } from '../../data/api-routes'
+import { AcceptedFile } from '../../utils/format-files'
+import imageCompression from 'browser-image-compression'
+import { generateS3ImagePath } from '../aws/config'
+
+export interface Photo {
+  path: string
+  thumbPath: string
+}
 
 export interface ProductData {
   name: string
@@ -25,14 +32,27 @@ export interface ProductDataResponse extends ProductData {
   _id: string
 }
 
-export const createProduct = async (data: ProductData, file: File, callback: (data?: ProductDataResponse, errorMessage?: string) => void): Promise<void> => {
-  const ext = file.name.substr(file.name.length - 3)
-  const filename = uuid() + '.' + ext
-  const path = `uploads/images/products/${filename}`
-  data.thumbImg = path
+export interface CreateProductData extends ProductData {
+  photos: Photo[]
+}
+
+export const createProduct = async (data: CreateProductData, acceptedFiles: AcceptedFile[], callback: (data?: ProductDataResponse, errorMessage?: string) => void): Promise<void> => {
   try {
+    const photosUrl: Photo[] = []
+
+    for (const { file } of acceptedFiles) {
+      const mainFile: File = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1024 }) as File
+      const thumbFile: File = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 500 }) as File
+      const { path, thumbPath } = generateS3ImagePath(file, 'products')
+      await uploadObjectOnS3(thumbFile, thumbPath)
+      await uploadObjectOnS3(mainFile, path)
+      photosUrl.push({ path, thumbPath })
+    }
+
+    data.thumbImg = photosUrl[0].path
+    data.photos = photosUrl
+
     const response = await api.post('product', { ...data })
-    await uploadObjectOnS3(file, path)
     callback(response.data)
   } catch (error) {
     console.log(error.response.data.message)
@@ -58,22 +78,23 @@ export const showProduct = async (id: string, callback: (data?: ProductDataRespo
   }
 }
 
-export const updateProduct = async (data: ProductData, currentProduct: ProductDataResponse, file: File | null, callback: (data?: ProductDataResponse, errorMessage?: string) => void): Promise<void> => {
-  let path: string = ''
-  if (file) {
-    const ext = file.name.substr(file.name.length - 3)
-    const filename = uuid() + '.' + ext
-    path = `uploads/images/products/${filename}`
-    data.thumbImg = path
-  } else {
-    data.thumbImg = currentProduct.thumbImg
-  }
-
+export const updateProduct = async (data: CreateProductData, currentProduct: ProductDataResponse, acceptedFiles: AcceptedFile[], callback: (data?: ProductDataResponse, errorMessage?: string) => void): Promise<void> => {
   try {
-    const response = await api.put('product', { ...data, _id: currentProduct._id })
-    if (file) {
-      await uploadObjectOnS3(file, path)
+    const photosUrl: Photo[] = []
+
+    for (const { file } of acceptedFiles) {
+      const mainFile: File = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1024 }) as File
+      const thumbFile: File = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 500 }) as File
+      const { path, thumbPath } = generateS3ImagePath(file, 'products')
+      await uploadObjectOnS3(thumbFile, thumbPath)
+      await uploadObjectOnS3(mainFile, path)
+      photosUrl.push({ path, thumbPath })
     }
+
+    data.thumbImg = photosUrl[0].path
+    data.photos = photosUrl
+
+    const response = await api.put('product', { ...data, _id: currentProduct._id })
     callback(response.data)
   } catch (error) {
     callback(undefined, error.response.message)

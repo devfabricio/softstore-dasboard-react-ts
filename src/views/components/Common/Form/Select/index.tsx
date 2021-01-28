@@ -5,6 +5,7 @@ import * as S from './style'
 export interface SelectOptionsTypes {
   key: string
   value: string
+  selected?: boolean
 }
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
@@ -31,7 +32,7 @@ const Select: React.FC<SelectProps> = ({ name, labelText, options, ...props }) =
       {labelText && <label>{labelText}</label>}
       <select ref={selectRef} {...props}>
         {options.map((optionItem, i) =>
-          <option key={i} value={optionItem.value}>{optionItem.key}</option>)}
+          <option selected={optionItem.selected} key={i} value={optionItem.value}>{optionItem.key}</option>)}
       </select>
       {error}
     </S.SelectContainer>
