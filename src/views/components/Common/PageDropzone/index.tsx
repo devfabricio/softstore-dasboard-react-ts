@@ -9,6 +9,7 @@ import { ProductDataResponse } from '../../../../services/api/products'
 interface PageDropzoneProps {
   handleAcceptedFiles: (files: File[]) => void
   handleDeleteAcceptedFiles: (fileIndex: number) => void
+  handleDeletePhoto?: (photo: ProductPhotoResponse) => void
   acceptedFiles: AcceptedFile[]
   productPhotos?: ProductPhotoResponse[]
   product?: ProductDataResponse
@@ -16,7 +17,8 @@ interface PageDropzoneProps {
 
 const PageDropzone: React.FC<PageDropzoneProps> = ({
   handleAcceptedFiles, handleDeleteAcceptedFiles,
-  acceptedFiles, product, productPhotos = []
+  acceptedFiles, product, productPhotos = [],
+  handleDeletePhoto
 }) => {
   return (<>
     <Dropzone
@@ -45,7 +47,9 @@ const PageDropzone: React.FC<PageDropzoneProps> = ({
       {productPhotos.map((photo, i) => {
         return (
           <ImagePreview key={photo._id}
-                        imgName={photo.path === product?.thumbImg ? 'Capa Principal' : `Foto ${i}`}
+                        imgName={photo.thumbPath === product?.thumbImg ? 'Capa Principal' : `Foto ${i}`}
+                        handleDeletePhoto={handleDeletePhoto}
+                        productPhoto={photo}
                         imgUrl={`${s3BaseUrl}/${photo.thumbPath}`}
                         index={i}
                         handleDeleteAcceptedFiles={handleDeleteAcceptedFiles} />

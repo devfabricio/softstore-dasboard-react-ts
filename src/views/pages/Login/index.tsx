@@ -9,8 +9,7 @@ import getValidationErrors from '../../../utils/validationErrors'
 import { useAuth } from '../../context/AuthContext'
 import { useFeedback } from '../../context/FeedbackProvider'
 import { Link } from 'react-router-dom'
-import profile from '../../../assets/images/profile-img.png'
-import logo from '../../../assets/images/logo.svg'
+import logo from '../../../assets/images/logo-symbol.png'
 
 interface LoginFormData {
   email: string
@@ -62,32 +61,12 @@ const Login: React.FC = () => {
             <Card className="overflow-hidden">
               <div className="bg-soft-primary">
                 <Row>
-                  <Col className="col-7">
-                    <div className="text-primary p-4">
-                      <h5 className="text-primary">Welcome Back !</h5>
-                      <p>Sign in to continue to Skote.</p>
-                    </div>
-                  </Col>
-                  <Col className="col-5 align-self-end">
-                    <img src={profile} alt="" className="img-fluid" />
+                  <Col className="col-12 text-center p-4">
+                    <img src={logo} height={60} alt="" />
                   </Col>
                 </Row>
               </div>
-              <CardBody className="pt-0">
-                <div>
-                  <Link to="/">
-                    <div className="avatar-md profile-user-wid mb-4">
-                        <span className="avatar-title rounded-circle bg-light">
-                          <img
-                            src={logo}
-                            alt=""
-                            className="rounded-circle"
-                            height="34"
-                          />
-                        </span>
-                    </div>
-                  </Link>
-                </div>
+              <CardBody className="pt-0 mt-3">
                 <div className="p-2">
                   <Form
                     className="form-horizontal"
@@ -96,40 +75,24 @@ const Login: React.FC = () => {
                   >
                     <Input
                       name="email"
-                      label="Email"
+                      label="E-mail"
                       className="form-control"
-                      placeholder="Enter email"
                       type="email"
                       required
                     />
                     <Input
                       name="password"
-                      label="Password"
+                      label="Senha"
                       type="password"
                       required
-                      placeholder="Enter Password"
                     />
-
-                    <div className="custom-control custom-checkbox">
-                      <input
-                        type="checkbox"
-                        className="custom-control-input"
-                        id="customControlInline"
-                      />
-                      <label
-                        className="custom-control-label"
-                        htmlFor="customControlInline"
-                      >
-                        Remember me
-                      </label>
-                    </div>
 
                     <div className="mt-3">
                       <Button
                         className="btn btn-primary btn-block waves-effect waves-light"
                         type="submit"
                       >
-                        Log In
+                        Entrar
                       </Button>
                     </div>
 
@@ -145,18 +108,7 @@ const Login: React.FC = () => {
             </Card>
             <div className="mt-5 text-center">
               <p>
-                Don&#39;t have an account ?{' '}
-                <Link
-                  to="register"
-                  className="font-weight-medium text-primary"
-                >
-                  {' '}
-                  Signup now{' '}
-                </Link>{' '}
-              </p>
-              <p>
-                © {new Date().getFullYear()} Skote. Crafted with{' '}
-                <i className="mdi mdi-heart text-danger" /> by Themesbrand
+                © {new Date().getFullYear()} Sonhadeira. Criado por Balloon.dev
               </p>
             </div>
           </Col>

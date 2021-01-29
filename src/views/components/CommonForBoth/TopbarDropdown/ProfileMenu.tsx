@@ -18,6 +18,7 @@ const ProfileMenu: React.FC = () => {
 
   const { administrator } = useAuth()
   const [menu, setMenu] = useState(false)
+  const { signOut } = useAuth()
 
   return (
     <React.Fragment>
@@ -59,7 +60,10 @@ const ProfileMenu: React.FC = () => {
             Adicionar Administrador
           </DropdownItem>
           <div className="dropdown-divider"/>
-          <Link to="/logout" className="dropdown-item">
+          <Link to="#" className="dropdown-item" onClick={(e) => {
+            e.preventDefault()
+            signOut()
+          }}>
             <i className="bx bx-power-off font-size-16 align-middle mr-1 text-danger"/>
             Sair
           </Link>

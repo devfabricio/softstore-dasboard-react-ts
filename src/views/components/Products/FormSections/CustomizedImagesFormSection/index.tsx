@@ -18,7 +18,7 @@ interface CustomizedImageFormSectionProps {
 
 const CustomizedImageFormSection: React.FC<CustomizedImageFormSectionProps> = ({ product }) => {
   const [groups, setGroups] = useState<CustomizedImageGroupResponse[]>([])
-  const [productImageGroups, setProductImageGroups] = useState<ProductCustomizedImageGroupRelationResponse[]>([])
+  const [productImageGroups, setProductImageGroups] = useState<ProductCustomizedImageGroupRelationResponse[]>()
 
   const listGroups = useCallback(() => {
     listCustomizedImageGroup(customizedImageGroups => {
@@ -51,9 +51,7 @@ const CustomizedImageFormSection: React.FC<CustomizedImageFormSectionProps> = ({
         id: group._id,
         label: group.name,
         value: group._id,
-        checked: productImageGroups
-          ? !!productImageGroups.find(it => it.group === group._id)
-          : false
+        checked: !!productImageGroups?.find(it => it.group === group._id)
       })
     }
 
@@ -63,12 +61,8 @@ const CustomizedImageFormSection: React.FC<CustomizedImageFormSectionProps> = ({
   return (<PageCard title={'Imagens Personalizadas'} description={'Marque abaixo quais '}>
     <Row>
       <Col sm={'12'}>
-        { productImageGroups.length > 0 &&
-          <InputCheckbox options={getCheckboxOptions()} name={'imageGroup'} />
-        }
-        { productImageGroups.length === 0 &&
-        <InputCheckbox options={getCheckboxOptions()} name={'imageGroup'} />
-        }
+        {!product && <InputCheckbox options={getCheckboxOptions()} name={'imageGroup'} />}
+        {!!productImageGroups && <InputCheckbox options={getCheckboxOptions()} name={'imageGroup'} />}
       </Col>
     </Row>
   </PageCard>)

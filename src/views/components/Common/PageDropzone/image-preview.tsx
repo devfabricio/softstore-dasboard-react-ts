@@ -1,16 +1,19 @@
 import React from 'react'
 import { Card, Col, Row, UncontrolledTooltip } from 'reactstrap'
 import { Link } from 'react-router-dom'
+import { ProductPhotoResponse } from '../../../../services/api/product-photo'
 
 interface ImagePreviewProps {
   imgName: string
   imgUrl: string
   size?: string
   index: number
+  productPhoto?: ProductPhotoResponse
   handleDeleteAcceptedFiles: (fileIndex: number) => void
+  handleDeletePhoto?: (photo: ProductPhotoResponse) => void
 }
 
-const ImagePreview: React.FC<ImagePreviewProps> = ({ imgName, imgUrl, size, index, handleDeleteAcceptedFiles }) => {
+const ImagePreview: React.FC<ImagePreviewProps> = ({ imgName, imgUrl, size, productPhoto, index, handleDeleteAcceptedFiles, handleDeletePhoto }) => {
   return (<Card
     className="mt-1 mb-0 shadow-none border dz-processing dz-image-preview dz-success dz-complete"
   >
@@ -40,7 +43,11 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ imgName, imgUrl, size, inde
       <Link style={{ position: 'absolute', top: 0, right: -12 }}
         to="#" className="text-danger" onClick={(e) => {
           e.preventDefault()
-          handleDeleteAcceptedFiles(index)
+          if (productPhoto && handleDeletePhoto) {
+            handleDeletePhoto(productPhoto)
+          } else {
+            handleDeleteAcceptedFiles(index)
+          }
         }}>
         <i className="mdi mdi-close font-size-18 mr-3" id="deletetooltip" />
         <UncontrolledTooltip placement="top" target="deletetooltip">

@@ -4,10 +4,15 @@ import { apiRoutes } from '../../data/api-routes'
 import { AcceptedFile } from '../../utils/format-files'
 import imageCompression from 'browser-image-compression'
 import { generateS3ImagePath } from '../aws/config'
+import { ProductPhotoResponse } from './product-photo'
 
 export interface Photo {
   path: string
   thumbPath: string
+}
+
+export interface PhotoResponse extends Photo{
+  _id: string
 }
 
 export interface ProductData {
@@ -50,7 +55,7 @@ export const createProduct = async (data: CreateProductData, acceptedFiles: Acce
     }
 
     data.thumbImg = photosUrl[0].path
-    data.photos = photosUrl
+    data.photos = photosUrl.reverse()
 
     const response = await api.post('product', { ...data })
     callback(response.data)
@@ -78,7 +83,7 @@ export const showProduct = async (id: string, callback: (data?: ProductDataRespo
   }
 }
 
-export const updateProduct = async (data: CreateProductData, currentProduct: ProductDataResponse, acceptedFiles: AcceptedFile[], callback: (data?: ProductDataResponse, errorMessage?: string) => void): Promise<void> => {
+export const updateProduct = async (data: CreateProductData, currentProduct: ProductDataResponse, currentPhotos: ProductPhotoResponse[], deletedPhotos: PhotoResponse[], acceptedFiles: AcceptedFile[], callback: (data?: ProductDataResponse, errorMessage?: string) => void): Promise<void> => {
   try {
     const photosUrl: Photo[] = []
 
@@ -91,12 +96,26 @@ export const updateProduct = async (data: CreateProductData, currentProduct: Pro
       photosUrl.push({ path, thumbPath })
     }
 
-    data.thumbImg = photosUrl[0].path
-    data.photos = photosUrl
+    data.photos = photosUrl.reverse()
+
+    for (const deletedPhoto of deletedPhotos) {
+      await deleteObjectOnS3(deletedPhoto.path)
+      await deleteObjectOnS3(deletedPhoto.thumbPath)
+      await api.delete(`${apiRoutes.productPhoto}/${deletedPhoto._id}`)
+    }
+
+    if (!currentPhotos.find(it => it.path === currentProduct.thumbImg)) {
+      if (currentPhotos.length > 0) {
+        data.thumbImg = currentPhotos[0].thumbPath
+      } else if (photosUrl.length > 0) {
+        data.thumbImg = photosUrl[0].thumbPath
+      }
+    }
 
     const response = await api.put('product', { ...data, _id: currentProduct._id })
     callback(response.data)
   } catch (error) {
+    console.log(error.response.data.message)
     callback(undefined, error.response.message)
   }
 }

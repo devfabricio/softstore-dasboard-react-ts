@@ -6,6 +6,7 @@ import { useFeedback } from '../../../context/FeedbackProvider'
 import { Button, Select } from '../../../components/Common/Form'
 import {
   CreateProductData,
+  PhotoResponse,
   ProductData,
   ProductDataResponse,
   showProduct, updateProduct
@@ -22,11 +23,14 @@ import ProductDetailsFormSection from '../../../components/Products/FormSections
 import CustomizedImageFormSection from '../../../components/Products/FormSections/CustomizedImagesFormSection'
 import ProductPhotosFormSection from '../../../components/Products/FormSections/ProductPhotosFormSection'
 import { AcceptedFile } from '../../../../utils/format-files'
+import { ProductPhotoResponse } from '../../../../services/api/product-photo'
 
 const EditProduct: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const [product, setProduct] = useState<ProductDataResponse>()
+  const [productPhotos, setProductPhotos] = useState<ProductPhotoResponse[]>([])
   const [acceptedFiles, setAcceptedFiles] = useState<AcceptedFile[]>([])
+  const [deletedPhotos, setDeletedPhotos] = useState<PhotoResponse[]>([])
   const { openToast, showBackdrop, dismissBackdrop } = useFeedback()
 
   const history = useHistory()
@@ -37,7 +41,6 @@ const EditProduct: React.FC = () => {
     showProduct(productId, (data, errorMessage) => {
       if (data) {
         setProduct(data)
-        console.log(data)
       }
     })
   }, [history])
@@ -60,17 +63,19 @@ const EditProduct: React.FC = () => {
       openToast('Você deve adicionar uma descrição para o produto', 'error')
       return false
     }
-    if (acceptedFiles.length === 0) {
+
+    if (acceptedFiles.length === 0 && productPhotos.length === 0) {
       openToast('Você deve adicionar pelo menos uma foto no produto', 'error')
       return false
     }
+
     return true
-  }, [acceptedFiles, openToast])
+  }, [acceptedFiles.length, openToast, productPhotos.length])
 
   const handleSubmit = useCallback((data: CreateProductData) => {
     if (formValidation(data) && product) {
       showBackdrop()
-      updateProduct(data, product, acceptedFiles, (product, errorMessage) => {
+      updateProduct(data, product, productPhotos, deletedPhotos, acceptedFiles, (product, errorMessage) => {
         if (product) {
           dismissBackdrop()
           openToast('Produto adicionado com sucesso!', 'success')
@@ -78,7 +83,12 @@ const EditProduct: React.FC = () => {
         if (errorMessage) openToast(errorMessage, 'error')
       })
     }
-  }, [acceptedFiles, dismissBackdrop, formValidation, openToast, showBackdrop])
+  }, [acceptedFiles, deletedPhotos, dismissBackdrop, formValidation, openToast, product, showBackdrop])
+
+  const handleDeletePhoto = useCallback(({ _id, path, thumbPath }: ProductPhotoResponse) => {
+    setDeletedPhotos(arr => [...arr, { _id, path, thumbPath }])
+    setProductPhotos(arr => arr.filter(it => it._id !== _id))
+  }, [])
 
   return (
     <PageContent>
@@ -94,6 +104,9 @@ const EditProduct: React.FC = () => {
           <Col sm="3">
             <div className={'d-flex flex-column-reverse'}>
               <ProductPhotosFormSection acceptedFiles={acceptedFiles}
+                                        productPhotos={productPhotos}
+                                        setProductPhotos={setProductPhotos}
+                                        handleDeletePhoto={handleDeletePhoto}
                                         setAcceptedFiles={setAcceptedFiles}
                                         product={product}
               />

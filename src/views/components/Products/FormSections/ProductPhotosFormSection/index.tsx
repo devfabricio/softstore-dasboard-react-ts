@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
+import React, { Dispatch, SetStateAction, useCallback, useEffect } from 'react'
 import PageDropzone from '../../../Common/PageDropzone'
 import PageCard from '../../../Common/PageCard'
 import { AcceptedFile, getAcceptedFiles } from '../../../../../utils/format-files'
@@ -8,21 +8,25 @@ import { listProductPhotos, ProductPhotoResponse } from '../../../../../services
 interface ProductPhotosFormSectionProps {
   acceptedFiles: AcceptedFile[]
   setAcceptedFiles: Dispatch<SetStateAction<AcceptedFile[]>>
+  setProductPhotos?: Dispatch<SetStateAction<ProductPhotoResponse[]>>
+  productPhotos?: ProductPhotoResponse[]
+  handleDeletePhoto?: (photo: ProductPhotoResponse) => void
   product?: ProductDataResponse
 }
 
-const ProductPhotosFormSection: React.FC<ProductPhotosFormSectionProps> = ({ acceptedFiles, setAcceptedFiles, product }) => {
-  const [photos, setPhotos] = useState<ProductPhotoResponse[]>()
-
+const ProductPhotosFormSection: React.FC<ProductPhotosFormSectionProps> = ({
+  acceptedFiles, setAcceptedFiles, setProductPhotos, productPhotos,
+  product, handleDeletePhoto
+}) => {
   const listPhotos = useCallback(() => {
-    if (product) {
+    if (product && setProductPhotos) {
       listProductPhotos(product._id, (data, errorMessage) => {
         if (data) {
-          setPhotos(data.reverse())
+          setProductPhotos(data.reverse())
         }
       })
     }
-  }, [product])
+  }, [product, setProductPhotos])
 
   useEffect(() => {
     listPhotos()
@@ -40,8 +44,9 @@ const ProductPhotosFormSection: React.FC<ProductPhotosFormSectionProps> = ({ acc
   return (<PageCard title={'Fotos'} description={'Fotos dos produtos'}>
     <PageDropzone handleAcceptedFiles={handleAcceptedFiles}
                   acceptedFiles={acceptedFiles}
-                  productPhotos={photos}
+                  productPhotos={productPhotos}
                   product={product}
+                  handleDeletePhoto={handleDeletePhoto}
                   handleDeleteAcceptedFiles={handleDeleteAcceptedFiles}
     />
   </PageCard>)

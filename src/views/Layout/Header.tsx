@@ -2,7 +2,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import NotificationDropdown from '../components/CommonForBoth/TopbarDropdown/NotificationDropdown'
 import ProfileMenu from '../components/CommonForBoth/TopbarDropdown/ProfileMenu'
-import logoLg from '../../assets/images/logo-saboreio-white.svg'
+import logo from '../../assets/images/logo-light.png'
+import logoSymbol from '../../assets/images/logo-symbol.png'
 import { useLayout } from '../context/LayoutProvider'
 
 const Header: React.FC = () => {
@@ -26,19 +27,19 @@ const Header: React.FC = () => {
             <div className="navbar-brand-box">
               <Link to="/" className="logo logo-dark">
                 <span className="logo-sm">
-                  <img src={logoLg} alt="" height="22" />
+                  <img src={logoSymbol} alt="" height="22" />
                 </span>
                 <span className="logo-lg">
-                  <img src={logoLg} alt="" height="17" />
+                  <img src={logo} alt="" height="17" />
                 </span>
               </Link>
 
-              <Link to="/" className="logo logo-light">
+              <Link to="/" className="logo logo-light text-left">
                 <span className="logo-sm">
-                  <img src={logoLg} alt="" height="22" />
+                  <img src={logoSymbol} alt="" height="30" />
                 </span>
                 <span className="logo-lg">
-                  <img src={logoLg} alt="" height="40" />
+                  <img src={logo} alt="" height="41" />
                 </span>
               </Link>
             </div>
