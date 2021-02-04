@@ -7,13 +7,17 @@ import {
 } from 'reactstrap'
 import Layout from '../../../Layout'
 
-const PageContent: React.FC = ({ children }) => {
+interface LayoutProps {
+  pageTitle: string
+}
+
+const PageContent: React.FC<LayoutProps> = ({ children, pageTitle }) => {
   return (
     <Layout>
       <div className="page-content">
         <Container fluid>
           {/* Render Breadcrumb */}
-          <Breadcrumbs title="Ecommerce" breadcrumbItem="Add Product" />
+          <Breadcrumbs title="Painel Administrativo" breadcrumbItem={pageTitle} />
           <Row>
             <Col xs="12">
               {children}

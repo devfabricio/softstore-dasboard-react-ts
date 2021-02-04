@@ -24,6 +24,7 @@ import CustomizedImageFormSection from '../../../components/Products/FormSection
 import ProductPhotosFormSection from '../../../components/Products/FormSections/ProductPhotosFormSection'
 import { AcceptedFile } from '../../../../utils/format-files'
 import { ProductPhotoResponse } from '../../../../services/api/product-photo'
+import { Helmet } from 'react-helmet'
 
 const EditProduct: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
@@ -91,7 +92,11 @@ const EditProduct: React.FC = () => {
   }, [])
 
   return (
-    <PageContent>
+    <PageContent pageTitle={'Editar Produto'}>
+      <Helmet>
+        <title>Editar Produto | Painel Administrativo | Sonhadeira</title>
+        <meta name="description" content="Painel administrativo da Sonhadeira" />
+      </Helmet>
       <Form ref={formRef} action="#" onSubmit={handleSubmit}>
         {product && <Row>
           <Col sm="9">

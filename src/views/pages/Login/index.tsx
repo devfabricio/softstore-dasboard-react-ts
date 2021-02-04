@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useRef } from 'react'
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import { Row, Col, CardBody, Card, Container } from 'reactstrap'
@@ -18,13 +18,11 @@ interface LoginFormData {
 
 const Login: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
-  const [loading, setLoading] = useState(false)
   const { signIn } = useAuth()
-  const { openToast } = useFeedback()
+  const { openToast, showBackdrop, dismissBackdrop } = useFeedback()
 
   const handleSubmit = useCallback(async (data: LoginFormData) => {
-    setLoading(true)
-    console.log(loading)
+    showBackdrop()
     formRef.current?.setErrors({})
     try {
       const schema = Yup.object().shape({
@@ -35,17 +33,18 @@ const Login: React.FC = () => {
         abortEarly: false
       })
       await signIn({ email: data.email, password: data.password })
+      dismissBackdrop()
       openToast('Login efetuado com sucesso!', 'success')
       window.location.href = '/'
     } catch (error) {
       openToast('Dados de login inválidos. Tente novamente!', 'error')
-      setLoading(false)
+      dismissBackdrop()
       if (error.inner) {
         const errors = getValidationErrors(error)
         formRef.current?.setErrors(errors)
       }
     }
-  }, [signIn])
+  }, [dismissBackdrop, openToast, showBackdrop, signIn])
 
   return (
   <>

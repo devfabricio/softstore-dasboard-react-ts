@@ -7,13 +7,19 @@ import {
 import ImageGallery from './ImageGallery'
 import ImageUpload from './ImageUpload'
 import CreateImagesGroup from './CreateImagesGroup'
-import { CustomizedImageGroupResponse, listCustomizedImageGroup } from '../../../../services/api/customized-image-group'
+import {
+  CustomizedImageGroupResponse,
+  deleteCustomizedImageGroup,
+  listCustomizedImageGroup
+} from '../../../../services/api/customized-image-group'
 import {
   CustomizedImageGroupRelationResponse,
   listCustomizedImageGroupRelation
 } from '../../../../services/api/customized-image-group-relation'
 import PageCard from '../../../components/Common/PageCard'
 import { Link } from 'react-router-dom'
+import { useFeedback } from '../../../context/FeedbackProvider'
+import { Helmet } from 'react-helmet'
 
 export interface GalleryImageInterface {
   id: string
@@ -28,6 +34,7 @@ const AddCustomizedImage: React.FC = () => {
   const [galleryImages, setGalleryImages] = useState<GalleryImageInterface[]>([])
   const [groups, setGroups] = useState<CustomizedImageGroupResponse[]>([])
   const [imageGroupRelations, setImageGroupRelations] = useState<CustomizedImageGroupRelationResponse[]>([])
+  const { openToast, showBackdrop, dismissBackdrop } = useFeedback()
 
   const listImages = useCallback(() => {
     listCustomizedImage(customizedImages => {
@@ -72,22 +79,28 @@ const AddCustomizedImage: React.FC = () => {
     listImageGroupRelations()
   }, [listImages, listGroups, listImageGroupRelations])
 
+  const removeGroup = useCallback((id: string) => {
+    showBackdrop()
+    deleteCustomizedImageGroup(id, () => {
+      dismissBackdrop()
+      listGroups()
+      listImageGroupRelations()
+      openToast('Grupo excluído com sucesso!', 'success')
+    })
+  }, [dismissBackdrop, listGroups, listImageGroupRelations, openToast, showBackdrop])
+
   return (
-    <PageContent>
+    <PageContent pageTitle={'Imagens Personalizadas'}>
+      <Helmet>
+        <title>Imagens Personalizadas | Painel Administrativo | Sonhadeira</title>
+        <meta name="description" content="Painel administrativo da Sonhadeira" />
+      </Helmet>
       <Row>
-        <Col sm="12">
-          <ImageUpload listImages={listImages} />
-          <ImageGallery listImages={listImages}
-                        groups={groups}
-                        imageGroupRelations={imageGroupRelations}
-                        galleryImages={galleryImages}
-                        setGalleryImages={setGalleryImages} />
+        <Col sm="6">
+          <CreateImagesGroup listGroups={listGroups} />
         </Col>
         <Col sm="6">
-          <CreateImagesGroup />
-        </Col>
-        <Col sm="6">
-          <PageCard title={'Lista de Categorias'} description={'Confira abaixo a lista de categorias'} >
+          <PageCard title={'Lista de Grupos'} description={'Confira abaixo a lista de grupos de imagens'} >
             <div className="table-responsive">
               <Table className="table mb-0">
                 <thead>
@@ -95,7 +108,7 @@ const AddCustomizedImage: React.FC = () => {
                   <th>#</th>
                   <th>Nome</th>
                   <th>Label</th>
-                  <th>Qtd. de Produtos</th>
+                  <th>Qtd. de Imagens</th>
                   <th>Ação</th>
                 </tr>
                 </thead>
@@ -109,20 +122,14 @@ const AddCustomizedImage: React.FC = () => {
                       <td>{group.label}</td>
                       <td>{imageGroupRelations.filter(it => it.group === group._id).length}</td>
                       <td>
-                        <Link to={`/categoria/${group._id}`} className="mr-3 text-primary">
-                          <i className="mdi mdi-pencil font-size-18 mr-3" id="edittooltip" />
-                          <UncontrolledTooltip placement="top" target="edittooltip">
-                            Edit
-                          </UncontrolledTooltip>
-                        </Link>
                         <Link to="#" className="text-danger" onClick={(e) => {
                           e.preventDefault()
-                          console.log('delete category')
+                          removeGroup(group._id)
                         }
                         }>
                           <i className="mdi mdi-close font-size-18 mr-3" id="deletetooltip" />
                           <UncontrolledTooltip placement="top" target="deletetooltip">
-                            Delete
+                            Deletar
                           </UncontrolledTooltip>
                         </Link>
                       </td>
@@ -132,6 +139,15 @@ const AddCustomizedImage: React.FC = () => {
               </Table>
             </div>
           </PageCard>
+        </Col>
+        <Col sm="12">
+          <ImageGallery listImages={listImages}
+                        listImageGroupRelations={listImageGroupRelations}
+                        groups={groups}
+                        imageGroupRelations={imageGroupRelations}
+                        galleryImages={galleryImages}
+                        setGalleryImages={setGalleryImages} />
+          <ImageUpload listImages={listImages} />
         </Col>
       </Row>
       </PageContent>

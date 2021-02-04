@@ -123,7 +123,7 @@ const Chat: React.FC<any> = (props) => {
   }
 
   return (
-    <PageContent>
+    <PageContent pageTitle={'Chat'}>
       <div className="d-lg-flex">
         <div className="chat-leftsidebar mr-lg-4">
           <div className="">

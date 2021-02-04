@@ -76,7 +76,7 @@ const AddPostCategory: React.FC = () => {
   console.log(confirmAlertDialogData)
 
   return (
-    <PageContent>
+    <PageContent pageTitle={'Categorias'}>
       <Row>
         <Col sm="6">
           <PageCard title={'Adicionar categoria'} description={'Preencha o campo abaixo para adicionar uma nova categoria'} >

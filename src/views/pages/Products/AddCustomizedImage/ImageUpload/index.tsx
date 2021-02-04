@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react'
 import { Progress } from 'reactstrap'
 import CircularProgress from '../../../../components/Common/Feedbacks/CircularProgress'
 import { Button } from '../../../../components/Common/Form'
-import PageCard from '../../../../components/Common/PageCard'
 import { AcceptedFile } from '../../../../../utils/format-files'
 import { createCustomizedImage } from '../../../../../services/api/customized-images'
 import { useFeedback } from '../../../../context/FeedbackProvider'
@@ -36,7 +35,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ listImages }) => {
     })
   }, [acceptedFiles, listImages, openToast])
 
-  return (<PageCard title={'Fotos'} description={'Fotos dos produtos'}>
+  return (<>
     <ProductPhotosFormSection acceptedFiles={acceptedFiles} setAcceptedFiles={setAcceptedFiles} />
     <div className={'mt-3'}>
       {loading &&
@@ -53,9 +52,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ listImages }) => {
                            disabled={acceptedFiles.length === 0}
                            onClick={() => acceptedFiles.length > 0 ? handleSubmit() : null}
                            color="primary"
-                           className="mr-1 waves-effect waves-light btn btn-primary"> Adicionar Categoria </Button>}
+                           className="mr-1 waves-effect waves-light btn btn-primary"> Adicionar Imagens </Button>}
     </div>
-  </PageCard>)
+  </>)
 }
 
 export default ImageUpload

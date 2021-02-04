@@ -40,7 +40,7 @@ const AddPost: React.FC = () => {
   }, [categories])
 
   return (
-    <PageContent>
+    <PageContent pageTitle={'Adicionar Publicação'}>
       <PageCard title={'Novo Produto'} description={'Insira as informações abaixo para adicionar o produto'}>
         <Form ref={formRef} action="#" onSubmit={handleSubmit}>
           <Row>

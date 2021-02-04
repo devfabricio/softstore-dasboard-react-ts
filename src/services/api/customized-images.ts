@@ -1,6 +1,6 @@
 import api from './index'
 import { apiRoutes } from '../../data/api-routes'
-import { deleteObjectOnS3, uploadObjectOnS3 } from '../aws/upload-object'
+import { AWSDataResponse, deleteObjectOnS3, uploadObjectOnS3 } from '../aws/upload-object'
 import { AcceptedFile } from '../../utils/format-files'
 import { generateS3ImagePath, s3BaseUrl } from '../aws/config'
 import imageCompression from 'browser-image-compression'
@@ -33,21 +33,24 @@ export const listCustomizedImage = async (callback: (data: CustomizedImageRespon
 
 export const createCustomizedImage = async (acceptedFiles: AcceptedFile[], callback: (sentCount?: number, data?: CustomizedImageData, errorMessage?: string) => void): Promise<void> => {
   let count = 0
-  for (const { file } of acceptedFiles) {
-    try {
+  try {
+    const response = await api.get('app-data/aws')
+    const awsData: AWSDataResponse = response.data
+    console.log(awsData)
+    for (const { file } of acceptedFiles) {
       const mainFile: File = await imageCompression(file, { maxSizeMB: 0.4, maxWidthOrHeight: 1024 }) as File
       const thumbFile: File = await imageCompression(file, { maxSizeMB: 0.2, maxWidthOrHeight: 200 }) as File
       const { path, fullURL, thumbPath, fullThumbURL } = generateS3ImagePath(file, 'customized-images')
-      await uploadObjectOnS3(thumbFile, thumbPath)
-      await uploadObjectOnS3(mainFile, path)
+      await uploadObjectOnS3(thumbFile, thumbPath, awsData)
+      await uploadObjectOnS3(mainFile, path, awsData)
       await api.post(apiRoutes.customizedImage, { url: fullURL, thumbUrl: fullThumbURL })
       count++
       callback(count)
-    } catch (error) {
-      console.log(error)
-      const message = messages.find(message => message.original === error.response.data.message)
-      callback(undefined, undefined, message?.translate_BR)
     }
+  } catch (error) {
+    console.log(error)
+    const message = messages.find(message => message.original === error.response.data.message)
+    callback(undefined, undefined, message?.translate_BR)
   }
 }
 
@@ -67,9 +70,11 @@ export const addProductQuantityInCustomizedImage = async (id: string): Promise<v
 
 export const deleteCustomizedImage = async (galleryImages: GalleryImageInterface[], callback: (errorMessage?: string) => void): Promise<void> => {
   try {
+    const response = await api.get('app-data/aws')
+    const awsData: AWSDataResponse = response.data
     for (const customizedImage of galleryImages) {
-      await deleteObjectOnS3(customizedImage.thumbnail.replace(`${s3BaseUrl}/`, ''))
-      await deleteObjectOnS3(customizedImage.src.replace(`${s3BaseUrl}/`, ''))
+      await deleteObjectOnS3(customizedImage.thumbnail.replace(`${s3BaseUrl}/`, ''), awsData)
+      await deleteObjectOnS3(customizedImage.src.replace(`${s3BaseUrl}/`, ''), awsData)
       await api.delete(`${apiRoutes.customizedImage}/${customizedImage.id}`)
     }
     callback()

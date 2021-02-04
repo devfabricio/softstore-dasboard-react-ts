@@ -7,13 +7,18 @@ import { FormHandles } from '@unform/core'
 import { createCustomizedImageGroup } from '../../../../../services/api/customized-image-group'
 import { useFeedback } from '../../../../context/FeedbackProvider'
 
-const CreateImagesGroup: React.FC = () => {
+interface CreateImagesGroupProps {
+  listGroups: () => void
+}
+
+const CreateImagesGroup: React.FC<CreateImagesGroupProps> = ({ listGroups }) => {
   const formRef = useRef<FormHandles>(null)
   const { openToast, showBackdrop, dismissBackdrop } = useFeedback()
   const handleSubmit = useCallback((data) => {
     showBackdrop()
     createCustomizedImageGroup(data, (data) => {
       dismissBackdrop()
+      listGroups()
       formRef.current?.reset()
       openToast('Grupo criado com sucesso!', 'success')
     })

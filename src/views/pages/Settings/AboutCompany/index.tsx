@@ -9,6 +9,7 @@ import { FormHandles } from '@unform/core'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { SettingsData, showSettings, updateSettings } from '../../../../services/api/settings'
 import { useFeedback } from '../../../context/FeedbackProvider'
+import { Helmet } from 'react-helmet'
 
 const AboutCompany: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
@@ -31,7 +32,11 @@ const AboutCompany: React.FC = () => {
     })
   }, [dismissBackdrop, openToast, settingsData, showBackdrop])
 
-  return (<PageContent>
+  return (<PageContent pageTitle={'Sobre a empresa'}>
+    <Helmet>
+      <title>Sobre a Empresa | Painel Administrativo | Sonhadeira</title>
+      <meta name="description" content="Painel administrativo da Sonhadeira" />
+    </Helmet>
     <PageCard title={'Sobre a empresa'} description={'Insira as informações abaixo para adicionar o produto'}>
       <Form ref={formRef} action="#" onSubmit={handleSubmit}>
         <Row>
@@ -43,7 +48,7 @@ const AboutCompany: React.FC = () => {
             />
           </Col>
         </Row>
-        <Button type="submit" color="primary" className="mr-1 waves-effect waves-light"> Salvar </Button>
+        <Button type="submit" color="primary" className="btn btn-primary mr-1 waves-effect waves-light"> Salvar </Button>
       </Form>
     </PageCard>
   </PageContent>)

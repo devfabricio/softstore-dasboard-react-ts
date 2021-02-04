@@ -1,6 +1,6 @@
 import api from './index'
 import { uuid } from 'uuidv4'
-import { uploadObjectOnS3 } from '../aws/upload-object'
+import { AWSDataResponse, uploadObjectOnS3 } from '../aws/upload-object'
 import imageCompression from 'browser-image-compression'
 import { apiRoutes } from '../../data/api-routes'
 
@@ -44,9 +44,11 @@ export const updateProfilePhoto = async (data: AdministratorData, file: File, ca
   const path = `uploads/images/users/profile/${filename}`
   delete data.password
   const body = { ...data, profileImg: path }
+  const response = await api.get('app-data/aws')
+  const awsData: AWSDataResponse = response.data
   try {
     const compressedFile: File = await imageCompression(file, compressionOptions) as File
-    await uploadObjectOnS3(compressedFile, path)
+    await uploadObjectOnS3(compressedFile, path, awsData)
     const response = await api.put(`${apiRoutes.administrator}`, body)
     if (response) {
       callback(body)

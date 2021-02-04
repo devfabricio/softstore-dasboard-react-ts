@@ -15,6 +15,7 @@ import { Form } from '@unform/web'
 import { CategoryRelationshipResponse, listCategoryRelationship } from '../../../../services/api/category-relationship'
 import { SelectOptionsTypes } from '../../../components/Common/Form/Select'
 import CategoryTableRow from './CategoryTableRow'
+import { Helmet } from 'react-helmet'
 
 const AddCategory: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
@@ -22,33 +23,9 @@ const AddCategory: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const { openToast } = useFeedback()
 
-  const orderCategoriesRelationship = (data: CategoryRelationshipResponse[]) => {
-    const arr: CategoryRelationshipResponse[] = []
-    const noParents = data.filter(catRel => !catRel.parent)
-
-    const orderParents = (parentCategoryRelationship: CategoryRelationshipResponse, level: number) => {
-      parentCategoryRelationship.level = level
-      arr.push(parentCategoryRelationship)
-      const children = data.filter(catRel => catRel.parent?._id === parentCategoryRelationship.category._id)
-      for (const categoryRelationship of children) {
-        if (data.filter(catRel => catRel.parent?._id === categoryRelationship._id)) {
-          orderParents(categoryRelationship, level + 1)
-        } else {
-          categoryRelationship.level = level + 1
-          arr.push(categoryRelationship)
-        }
-      }
-    }
-    for (const categoryRelationship of noParents) {
-      orderParents(categoryRelationship, 0)
-    }
-    console.log(arr)
-    setCategoriesRelationship(arr)
-  }
-
   const listCategories = useCallback(() => {
     listCategoryRelationship((data) => {
-      orderCategoriesRelationship(data)
+      setCategoriesRelationship(data)
     })
   }, [])
 
@@ -86,7 +63,11 @@ const AddCategory: React.FC = () => {
   }, [listCategories, openToast])
 
   return (
-    <PageContent>
+    <PageContent pageTitle={'Categorias'}>
+      <Helmet>
+        <title>Categorias | Painel Administrativo | Sonhadeira</title>
+        <meta name="description" content="Painel administrativo da Sonhadeira" />
+      </Helmet>
       <Row>
         <Col sm="6">
           <PageCard title={'Adicionar categoria'} description={'Preencha o campo abaixo para adicionar uma nova categoria'} >

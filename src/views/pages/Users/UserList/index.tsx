@@ -4,11 +4,16 @@ import PageCard from '../../../components/Common/PageCard'
 import { Table, UncontrolledTooltip } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import { AdministratorData } from '../../../../services/api/administrator'
+import { Helmet } from 'react-helmet'
 
 const UserList: React.FC = () => {
   const users: AdministratorData[] = []
 
-  return (<PageContent>
+  return (<PageContent pageTitle={'Lista de Usuários'}>
+    <Helmet>
+      <title>Usuários | Painel Administrativo | Sonhadeira</title>
+      <meta name="description" content="Painel administrativo da Sonhadeira" />
+    </Helmet>
     <PageCard title={'Lista de Usuários'} description={'Confira abaixo a lista de usuários cadastrados em sua loja'}>
       <div className="table-responsive">
         <Table className="table mb-0">

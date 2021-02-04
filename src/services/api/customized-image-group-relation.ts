@@ -28,3 +28,14 @@ export const createCustomizedImageGroupRelation = async (group: string, images: 
     callback(error)
   }
 }
+
+export const deleteCustomizedImageGroupRelation = async (imageRelations: CustomizedImageGroupRelationResponse[], callback: (errorMessage?: string) => void): Promise<void> => {
+  try {
+    for (const imageRelation of imageRelations) {
+      await api.delete(`${apiRoutes.customizedImageGroupRelation}/${imageRelation._id}`)
+    }
+    callback()
+  } catch (error) {
+    console.log(error.response.data.message)
+  }
+}

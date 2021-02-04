@@ -1,8 +1,15 @@
-import S3 from './index'
+import s3 from './index'
+
+export interface AWSDataResponse {
+  AWSSecretAccessKey: string
+  AWSAccessKeyId: string
+  AWSBucketRegion: string
+}
 
 const albumBucketName = 'saboreio-storage'
 
-export const uploadObjectOnS3 = async (file: File, key: string) => {
+export const uploadObjectOnS3 = async (file: File, key: string, awsData: AWSDataResponse) => {
+  const S3 = s3(awsData)
   try {
     const upload = new S3.ManagedUpload({
       params: {
@@ -18,7 +25,8 @@ export const uploadObjectOnS3 = async (file: File, key: string) => {
   }
 }
 
-export const deleteObjectOnS3 = async (imgUrl: string): Promise<void> => {
+export const deleteObjectOnS3 = async (imgUrl: string, awsData: AWSDataResponse): Promise<void> => {
+  const S3 = s3(awsData)
   try {
     const params = { Bucket: albumBucketName, Key: imgUrl }
     const s3Instance = new S3()

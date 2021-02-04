@@ -4,21 +4,22 @@ import { Form } from '@unform/web'
 import { Button, Select } from '../../../../components/Common/Form'
 import PageCard from '../../../../components/Common/PageCard'
 import { GalleryImageInterface } from '../index'
-import { SelectOptionsTypes } from '../../../../components/Common/Form/Select'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import { deleteCustomizedImage } from '../../../../../services/api/customized-images'
 import { FormHandles } from '@unform/core'
 import { useFeedback } from '../../../../context/FeedbackProvider'
 import { CustomizedImageGroupResponse } from '../../../../../services/api/customized-image-group'
+import { getGroupOptions, selectOptions } from './options'
 import {
   createCustomizedImageGroupRelation,
-  CustomizedImageGroupRelationResponse
+  CustomizedImageGroupRelationResponse, deleteCustomizedImageGroupRelation
 } from '../../../../../services/api/customized-image-group-relation'
 // @ts-ignore
 import Gallery from 'react-grid-gallery'
 
 interface ImageGalleryProps {
   listImages: () => void
+  listImageGroupRelations: () => void
   groups: CustomizedImageGroupResponse[]
   imageGroupRelations: CustomizedImageGroupRelationResponse[]
   galleryImages: GalleryImageInterface[]
@@ -26,7 +27,7 @@ interface ImageGalleryProps {
 }
 
 const ImageGallery: React.FC<ImageGalleryProps> = ({
-  listImages, setGalleryImages, galleryImages, groups, imageGroupRelations
+  listImages, listImageGroupRelations, setGalleryImages, galleryImages, groups, imageGroupRelations
 }) => {
   const selectFormRef = useRef<FormHandles>(null)
   const [selectAllImages, setSelectAllImages] = useState(false)
@@ -35,63 +36,16 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const [showGroupSelectInput, setShowGroupSelectInput] = useState(false)
   const [currentGroupSelected, setCurrentGroupSelected] = useState('')
-  const [currentActionSelected, setCurrentActionSelected] = useState('')
   const { openToast, showBackdrop, dismissBackdrop } = useFeedback()
 
   useEffect(() => {
     setSelectAllImages(selectedImages.length === galleryImages.length)
   }, [galleryImages.length, selectedImages])
 
-  const selectOptions: SelectOptionsTypes[] = [
-    {
-      key: 'Selecione uma opção',
-      value: ''
-    },
-    {
-      key: 'Excluir selecionados',
-      value: 'delete_selected'
-    },
-    {
-      key: 'Adicionar selecionadas ao grupo',
-      value: 'move_to_group'
-    },
-    {
-      key: 'Exibir imagens do grupo',
-      value: 'filter_images'
-    }
-  ]
-
-  const getGroupOptions = useCallback((): SelectOptionsTypes[] => {
-    const options: SelectOptionsTypes[] = []
-    if (currentActionSelected === 'filter_images') {
-      options.push({
-        key: 'Todas as imagens',
-        value: 'all_images'
-      })
-      options.push({
-        key: 'Todas os grupos',
-        value: 'all_groups'
-      })
-    } else {
-      options.push({
-        key: 'Selecione um grupo abaixo',
-        value: ''
-      })
-    }
-    for (const group of groups) {
-      options.push({
-        key: group.name,
-        value: group._id
-      })
-    }
-    return options
-  }, [currentActionSelected, groups])
-
   const handleChangeSelectAction = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value
     selectFormRef.current?.clearField('group')
-    setCurrentActionSelected(value)
-    if (value === 'move_to_group' || value === 'filter_images') {
+    if (value === 'move_to_group' || value === 'show_group_images') {
       setShowGroupSelectInput(true)
     } else {
       setShowGroupSelectInput(false)
@@ -103,69 +57,130 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
     setCurrentGroupSelected(value)
   }, [])
 
+  const handleSelectAllImages = useCallback((toggle: boolean) => {
+    const galleryImagesArr: GalleryImageInterface[] = []
+    const selectedImagesArr: GalleryImageInterface[] = []
+
+    const images = filteredImages.length > 0 ? filteredImages : galleryImages
+
+    for (const image of images) {
+      image.isSelected = toggle
+      if (toggle) {
+        selectedImagesArr.push(image)
+      }
+      galleryImagesArr.push(image)
+    }
+
+    setSelectedImages(selectedImagesArr)
+    setSelectAllImages(toggle)
+
+    if (filteredImages.length > 0) {
+      setFilteredImages(galleryImagesArr)
+    } else {
+      setGalleryImages(galleryImagesArr)
+    }
+  }, [filteredImages, galleryImages, setGalleryImages])
+
+  const moveImagesToGroup = useCallback(() => {
+    showBackdrop()
+    const images: GalleryImageInterface[] = []
+
+    for (const selectedImage of selectedImages) {
+      const groupImages = imageGroupRelations.filter(it => it.group === currentGroupSelected)
+      const imageInGroup = groupImages.find(it => it.image === selectedImage.id)
+      if (!imageInGroup) {
+        console.log('imageNotInGroup')
+        images.push(selectedImage)
+      }
+    }
+
+    if (images.length > 0) {
+      createCustomizedImageGroupRelation(currentGroupSelected, images, () => {
+        listImageGroupRelations()
+        handleSelectAllImages(false)
+        dismissBackdrop()
+        openToast('Imagens adicionadas com sucesso!', 'success')
+      })
+    } else {
+      dismissBackdrop()
+      openToast('As imagens selecionadas já pertecem ao grupo', 'warning')
+    }
+  }, [currentGroupSelected, handleSelectAllImages, imageGroupRelations, listImageGroupRelations, openToast, selectedImages])
+
+  const showGroupedImages = useCallback(() => {
+    handleSelectAllImages(false)
+    const filteredGallery: GalleryImageInterface[] = []
+    const arr = imageGroupRelations.filter(it => it.group === currentGroupSelected)
+    for (const relation of arr) {
+      const image = galleryImages.find(it => it.id === relation.image)
+      if (image) {
+        filteredGallery.push(image)
+      }
+    }
+    setFilteredImages(filteredGallery)
+  }, [currentGroupSelected, galleryImages, handleSelectAllImages, imageGroupRelations])
+
+  const removeFromGroup = useCallback(() => {
+    showBackdrop()
+    const imagesToRemove: CustomizedImageGroupRelationResponse[] = []
+    let newFilteredImages = filteredImages
+    for (const image of selectedImages) {
+      const imageRelation = imageGroupRelations.find(it => it.image === image.id && it.group === currentGroupSelected)
+      if (imageRelation) {
+        newFilteredImages = newFilteredImages.filter(it => it.id !== imageRelation.image)
+        imagesToRemove.push(imageRelation)
+      }
+    }
+    setFilteredImages(newFilteredImages)
+    deleteCustomizedImageGroupRelation(imagesToRemove, () => {
+      listImageGroupRelations()
+      dismissBackdrop()
+      openToast('Imagens removidas do grupo com sucesso!', 'success')
+    })
+  }, [currentGroupSelected, dismissBackdrop, filteredImages, imageGroupRelations, listImageGroupRelations, openToast, selectedImages, showBackdrop])
+
   const handleApplyAction = useCallback((data: any) => {
-    if (data.action === 'delete_selected') {
+    if (data.action === 'show_all_images') {
+      handleSelectAllImages(false)
+      setFilteredImages([])
+    }
+    if (data.action === 'delete_from_gallery') {
       setShowConfirmDelete(true)
     }
     if (data.action === 'move_to_group') {
-      createCustomizedImageGroupRelation(currentGroupSelected, selectedImages, () => {
-        openToast('Imagens adicionadas com sucesso!', 'success')
-      })
+      moveImagesToGroup()
     }
-    if (data.action === 'filter_images') {
-      const filteredGallery: GalleryImageInterface[] = []
-      if (currentGroupSelected === 'all_images') {
-        setFilteredImages([])
-      } else if (currentGroupSelected === 'all_groups') {
-        setFilteredImages([])
-      } else {
-        const arr = imageGroupRelations.filter(relation => relation.group === currentGroupSelected)
-        for (const relation of arr) {
-          const image = galleryImages.find(image => image.id === relation.image)
-          if (image) {
-            filteredGallery.push(image)
-          }
-        }
-        setFilteredImages(filteredGallery)
-      }
+    if (data.action === 'show_group_images') {
+      showGroupedImages()
     }
-  }, [currentGroupSelected, galleryImages, imageGroupRelations, openToast, selectedImages])
-
-  const handleSelectAllImages = useCallback(() => {
-    const galleryImagesArr: GalleryImageInterface[] = []
-    const selectedImagesArr: GalleryImageInterface[] = []
-    for (const galleryImage of galleryImages) {
-      galleryImage.isSelected = !selectAllImages
-      if (!selectAllImages) {
-        selectedImagesArr.push(galleryImage)
-      }
-      galleryImagesArr.push(galleryImage)
-    }
-    setSelectedImages(selectedImagesArr)
-    setSelectAllImages(currentValue => !currentValue)
-    setGalleryImages(galleryImagesArr)
-  }, [galleryImages, selectAllImages, setGalleryImages])
+  }, [handleSelectAllImages, moveImagesToGroup, showGroupedImages])
 
   const onSelectImage = useCallback((index: number, image: GalleryImageInterface) => {
-    const isSelected = !galleryImages[index].isSelected
-    galleryImages[index].isSelected = isSelected
+    const images = filteredImages.length > 0 ? filteredImages : galleryImages
+    const isSelected = !images[index].isSelected
+    images[index].isSelected = isSelected
     if (isSelected) {
       setSelectedImages(arr => [...arr, image])
     } else {
       setSelectedImages(arr => arr.filter(selectedImage => selectedImage.id !== image.id))
     }
-    setGalleryImages(galleryImages)
-  }, [galleryImages, setGalleryImages])
+    if (filteredImages.length > 0) {
+      setFilteredImages(images)
+    } else {
+      setGalleryImages(images)
+    }
+  }, [filteredImages, galleryImages, setGalleryImages])
 
   const removeCustomizedImages = useCallback(() => {
     setShowConfirmDelete(false)
     showBackdrop()
     deleteCustomizedImage(selectedImages, () => {
       listImages()
+      listImageGroupRelations()
       dismissBackdrop()
       openToast('Imagens excluídas com sucesso', 'success')
     })
-  }, [dismissBackdrop, listImages, openToast, selectedImages, showBackdrop])
+  }, [dismissBackdrop, listImageGroupRelations, listImages, openToast, selectedImages, showBackdrop])
 
   return (<PageCard title={'Galeria'} description={'Fotos dos produtos'}>
     <Row>
@@ -173,14 +188,16 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
         <div className={'float-end'}>
           <Form ref={selectFormRef} className={'d-flex'} action="#" onSubmit={handleApplyAction}>
             <span className={'pt-2 mr-2 d-inline-block'}>Ação</span>
-            <Select name={'action'} onChange={(e) => handleChangeSelectAction(e)} options={selectOptions} className="form-control select2" />
-            {showGroupSelectInput && <Select name={'group'} options={getGroupOptions()} onChange={(e) => handleChangeSelectGroup(e)} className="ml-2 mr-2 form-control select2" />}
+            <Select name={'action'} onChange={(e) => handleChangeSelectAction(e)} options={selectOptions(selectedImages)} className="form-control select2" />
+            {showGroupSelectInput && <Select name={'group'} options={getGroupOptions(groups)} onChange={(e) => handleChangeSelectGroup(e)} className="ml-2 mr-2 form-control select2" />}
             <Button type="submit" color="primary" className="ml-2 waves-effect waves-light btn btn-primary"> Aplicar </Button>
           </Form>
         </div>
       </Col>
       <Col sm={showGroupSelectInput ? '4' : '8'} className={'d-flex justify-content-end'}>
-        <Button type="button" className={`${showGroupSelectInput ? 'ml-3' : 'ml-2'} waves-effect waves-light btn ${selectAllImages ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => handleSelectAllImages()}> Selecionar Tudo </Button>
+        {(filteredImages.length > 0 && selectedImages.length > 0) &&
+        <Button type="button" className={'waves-effect waves-light btn btn-outline-danger'} onClick={() => removeFromGroup()}> Remover do Grupo </Button>}
+        <Button type="button" className={`${showGroupSelectInput ? 'ml-3' : 'ml-2'} waves-effect waves-light btn ${selectAllImages ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => handleSelectAllImages(!selectAllImages)}> Selecionar Tudo </Button>
       </Col>
     </Row>
     <Gallery images={filteredImages.length > 0 ? filteredImages : galleryImages}

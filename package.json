@@ -33,6 +33,7 @@
     "react-draft-wysiwyg": "^1.14.5",
     "react-easy-crop": "^3.3.1",
     "react-grid-gallery": "^0.5.5",
+    "react-helmet": "^6.1.0",
     "react-intl-currency-input": "^0.2.6",
     "react-perfect-scrollbar": "^1.5.8",
     "react-router-dom": "^5.2.0",
@@ -51,6 +52,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "deploy": "aws s3 sync build/ s3://sonhadeira-dashboard --acl public-read",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -94,6 +96,7 @@
     "@types/react-draft-wysiwyg": "^1.13.1",
     "@types/react-dropzone": "^5.1.0",
     "@types/react-easy-crop": "^2.0.0",
+    "@types/react-helmet": "^6.1.0",
     "@types/react-icons": "^3.0.0",
     "@types/react-input-mask": "^3.0.0",
     "@types/react-router-dom": "^5.1.6",

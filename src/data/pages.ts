@@ -16,7 +16,8 @@ import AddCustomizedImage from '../views/pages/Products/AddCustomizedImage'
 interface PageData {
   name: string,
   path: string
-  isPrivate: boolean,
+  isPrivate: boolean
+  isVisible: boolean
   component: ComponentType
 }
 
@@ -24,6 +25,7 @@ interface PageSectionData {
   name: string
   icon: string
   subItens: PageData[]
+  isVisible: boolean
 }
 
 const dashboard: PageData[] = [
@@ -31,7 +33,8 @@ const dashboard: PageData[] = [
     name: 'Dashboard',
     path: '/',
     isPrivate: true,
-    component: Dashboard
+    component: Dashboard,
+    isVisible: true
   }
 ]
 
@@ -40,7 +43,8 @@ const chat: PageData[] = [
     name: 'Chat',
     path: '/chat',
     isPrivate: true,
-    component: Chat
+    component: Chat,
+    isVisible: false
   }
 ]
 
@@ -49,25 +53,29 @@ const products: PageData[] = [
     name: 'Listar Produtos',
     path: '/produtos/lista',
     isPrivate: true,
-    component: ListProducts
+    component: ListProducts,
+    isVisible: true
   },
   {
     name: 'Novo Produto',
     path: '/produtos/novo',
     isPrivate: true,
-    component: AddProduct
+    component: AddProduct,
+    isVisible: true
   },
   {
     name: 'Categorias',
     path: '/produtos/categorias',
     isPrivate: true,
-    component: AddCategory
+    component: AddCategory,
+    isVisible: true
   },
   {
     name: 'Imagens Personalizadas',
     path: '/produtos/imagens',
     isPrivate: true,
-    component: AddCustomizedImage
+    component: AddCustomizedImage,
+    isVisible: true
   }
 ]
 
@@ -76,13 +84,15 @@ const posts: PageData[] = [
     name: 'Novo Post',
     path: '/post/novo',
     isPrivate: true,
-    component: AddPost
+    component: AddPost,
+    isVisible: true
   },
   {
     name: 'Categorias',
     path: '/post/novo',
     isPrivate: true,
-    component: AddPostCategory
+    component: AddPostCategory,
+    isVisible: true
   }
 ]
 
@@ -91,7 +101,8 @@ const orders: PageData[] = [
     name: 'Lista de Pedidos',
     path: '/pedidos',
     isPrivate: true,
-    component: OrderList
+    component: OrderList,
+    isVisible: true
   }
 ]
 
@@ -100,7 +111,8 @@ const users: PageData[] = [
     name: 'Lista de Usuários',
     path: '/usuarios/lista',
     isPrivate: true,
-    component: UserList
+    component: UserList,
+    isVisible: true
   }
 ]
 
@@ -109,19 +121,22 @@ const settings: PageData[] = [
     name: 'Geral',
     path: '/configuracoes/geral',
     isPrivate: true,
-    component: GeneralSettings
+    component: GeneralSettings,
+    isVisible: true
   },
   {
     name: 'Sobre a Empresa',
     path: '/configuracoes/sobre',
     isPrivate: true,
-    component: AboutCompany
+    component: AboutCompany,
+    isVisible: true
   },
   {
     name: 'Redes Sociais',
     path: '/configuracoes/redes-sociais',
     isPrivate: true,
-    component: SocialMedia
+    component: SocialMedia,
+    isVisible: true
   }
 ]
 
@@ -129,37 +144,44 @@ export const pageSections: PageSectionData[] = [
   {
     name: 'Dashboard',
     icon: 'fa-columns',
-    subItens: dashboard
+    subItens: dashboard,
+    isVisible: true
   },
   {
     name: 'Chat',
     icon: 'fa-comments',
-    subItens: chat
+    subItens: chat,
+    isVisible: false
   },
   {
     name: 'Produtos',
     icon: 'fa-box-open',
-    subItens: products
+    subItens: products,
+    isVisible: true
   },
   {
     name: 'Vendas',
     icon: 'fa-shopping-bag',
-    subItens: orders
+    subItens: orders,
+    isVisible: false
   },
   {
     name: 'Clientes',
     icon: 'fa-users',
-    subItens: users
+    subItens: users,
+    isVisible: false
   },
   {
     name: 'Blog',
     icon: 'fa-file-alt',
-    subItens: posts
+    subItens: posts,
+    isVisible: false
   },
   {
     name: 'Configurações',
     icon: 'fa-cog',
-    subItens: settings
+    subItens: settings,
+    isVisible: true
   }
 ]
 

@@ -41,7 +41,7 @@ const ProductPhotosFormSection: React.FC<ProductPhotosFormSectionProps> = ({
     setAcceptedFiles(arr => arr.filter(it => it.id !== id))
   }, [setAcceptedFiles])
 
-  return (<PageCard title={'Fotos'} description={'Fotos dos produtos'}>
+  return (<PageCard title={'Upload de Imagens'} description={'Clique no quadro abaixo ou arraste as imagens para adicionar imagens nas galerias'}>
     <PageDropzone handleAcceptedFiles={handleAcceptedFiles}
                   acceptedFiles={acceptedFiles}
                   productPhotos={productPhotos}

@@ -91,8 +91,8 @@ const ChangeProfilePhoto: React.FC = () => {
   }
 
   return (
-    <PageContent>
-      <PageCard title={'Editar Perfil'} description={'Preencha o formulário abaixo para editar os seus dados de perfil'}>
+    <PageContent pageTitle={'Alterar Foto de Perfil'}>
+      <PageCard title={'Alterar Foto de Perfil'} description={'Preencha o formulário abaixo para editar os seus dados de perfil'}>
         <Row>
           {image !== srcPath && <Col xl="12">
             <div>
@@ -116,7 +116,7 @@ const ChangeProfilePhoto: React.FC = () => {
                   }}
                 />
                 <div className={'text-right mt-3'}>
-                  <Button type="submit" color="primary" className="mr-1 waves-effect waves-light" onClick={getCropData}> Pronto </Button>
+                  <Button type="submit" color="primary" className="btn btn-primary mr-1 waves-effect waves-light" onClick={getCropData}> Pronto </Button>
                 </div>
               </div>
             </div>
@@ -147,7 +147,7 @@ const ChangeProfilePhoto: React.FC = () => {
               </Label>
               {cropData !== '#' && <div>
                 {loading && <CircularProgress />}
-                {!loading && <Button type="submit" color="primary" className="mr-1 waves-effect waves-light" onClick={() => handleSubmit()}> Salvar Alterações </Button>}
+                {!loading && <Button type="submit" color="primary" className="btn btn-primary mr-1 waves-effect waves-light" onClick={() => handleSubmit()}> Salvar Alterações </Button>}
               </div>}
             </S.ChangeProfilePhotoWrapper>
           </Col>

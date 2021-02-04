@@ -38,7 +38,7 @@ const OrderList: React.FC = () => {
     setModal(!modal)
   }
 
-  return (<PageContent>
+  return (<PageContent pageTitle={'Pedidos'}>
     <PageCard title={'Lista de Usuários'} description={'Confira abaixo a lista de usuários cadastrados em sua loja'}>
       <PaginationProvider
         pagination={paginationFactory(pageOptions)}

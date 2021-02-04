@@ -7,6 +7,7 @@ import PageContent from '../../../components/Common/PageContent'
 import { FormHandles } from '@unform/core'
 import { SettingsData, showSettings, updateSettings } from '../../../../services/api/settings'
 import { useFeedback } from '../../../context/FeedbackProvider'
+import { Helmet } from 'react-helmet'
 
 const SocialMedia: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
@@ -29,7 +30,11 @@ const SocialMedia: React.FC = () => {
     })
   }, [dismissBackdrop, openToast, settingsData, showBackdrop])
 
-  return (<PageContent>
+  return (<PageContent pageTitle={'Redes Sociais'}>
+    <Helmet>
+      <title>Redes Sociais | Painel Administrativo | Sonhadeira</title>
+      <meta name="description" content="Painel administrativo da Sonhadeira" />
+    </Helmet>
     <PageCard title={'Editar Redes Sociais'} description={'Insira as informações abaixo para adicionar o produto'}>
       <Form ref={formRef} action="#" onSubmit={handleSubmit}>
         <Row>
@@ -42,7 +47,7 @@ const SocialMedia: React.FC = () => {
             <Input name={'pinterest'} type="text" label={'Pintrest'} defaultValue={settingsData?.pinterest} className="form-control" />
           </Col>
         </Row>
-        <Button type="submit" color="primary" className="mr-1 waves-effect waves-light"> Salvar </Button>
+        <Button type="submit" color="primary" className="btn btn-primary mr-1 waves-effect waves-light"> Salvar </Button>
       </Form>
     </PageCard>
   </PageContent>)

@@ -7,6 +7,7 @@ import PageContent from '../../../components/Common/PageContent'
 import { FormHandles } from '@unform/core'
 import { SettingsData, showSettings, updateSettings } from '../../../../services/api/settings'
 import { useFeedback } from '../../../context/FeedbackProvider'
+import { Helmet } from 'react-helmet'
 
 const GeneralSettings: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
@@ -29,8 +30,12 @@ const GeneralSettings: React.FC = () => {
     })
   }, [dismissBackdrop, openToast, settingsData])
 
-  return (<PageContent>
-    <PageCard title={'Novo Produto'} description={'Insira as informações abaixo para adicionar o produto'}>
+  return (<PageContent pageTitle={'Configurações Gerais'}>
+    <Helmet>
+      <title>Configurações Gerais| Painel Administrativo | Sonhadeira</title>
+      <meta name="description" content="Painel administrativo da Sonhadeira" />
+    </Helmet>
+    <PageCard title={'Configurações Gerais'} description={'Insira as informações abaixo para atualizar as informações'}>
       <Form ref={formRef} action="#" onSubmit={handleSubmit}>
         {settingsData && <Row>
           <Col sm="12">
@@ -48,7 +53,7 @@ const GeneralSettings: React.FC = () => {
             <Input name={'openingHours'} type="text" label={'Horário de Atendimento'} defaultValue={settingsData.openingHours} className="form-control" />
           </Col>
         </Row>}
-        <Button type="submit" color="primary" className="mr-1 waves-effect waves-light"> Salvar </Button>
+        <Button type="submit" color="primary" className="btn btn-primary mr-1 waves-effect waves-light"> Salvar </Button>
       </Form>
     </PageCard>
   </PageContent>)

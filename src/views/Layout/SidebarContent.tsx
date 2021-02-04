@@ -59,32 +59,36 @@ const SidebarContent: React.FC = (props) => {
     <React.Fragment>
       <div id="sidebar-menu">
         <ul className="metismenu list-unstyled" id="side-menu">
-          {pageSections.map((section, index) => {
-            const menuItens = section.subItens
-            if (menuItens.length > 1) {
-              return (
+          {pageSections
+            .filter(it => it.isVisible)
+            .map((section, index) => {
+              const menuItens = section.subItens
+              if (menuItens.length > 1) {
+                return (
                 <li key={index}>
                   <Link to="/#" className="has-arrow waves-effect">
                     <i className={`fas ${section.icon} `}/>
                     <span>{ section.name }</span>
                   </Link>
                   <ul className="sub-menu" aria-expanded="false">
-                    {menuItens.map((item, index) => {
-                      return (<li key={index}><Link to={item.path}>{item.name}</Link></li>)
-                    })}
+                    {menuItens
+                      .filter(it => it.isVisible)
+                      .map((item, index) => {
+                        return (<li key={index}><Link to={item.path}>{item.name}</Link></li>)
+                      })}
                   </ul>
                 </li>)
-            } else {
-              return (
+              } else {
+                return (
                 <li key={index}>
                   <Link to={menuItens[0].path} className=" waves-effect">
                     <i className={`fas ${section.icon} `}/>
                     <span>{ menuItens[0].name }</span>
                   </Link>
                 </li>
-              )
-            }
-          })}
+                )
+              }
+            })}
         </ul>
       </div>
     </React.Fragment>

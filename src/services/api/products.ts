@@ -1,4 +1,4 @@
-import { deleteObjectOnS3, uploadObjectOnS3 } from '../aws/upload-object'
+import { AWSDataResponse, deleteObjectOnS3, uploadObjectOnS3 } from '../aws/upload-object'
 import api from './index'
 import { apiRoutes } from '../../data/api-routes'
 import { AcceptedFile } from '../../utils/format-files'
@@ -44,13 +44,14 @@ export interface CreateProductData extends ProductData {
 export const createProduct = async (data: CreateProductData, acceptedFiles: AcceptedFile[], callback: (data?: ProductDataResponse, errorMessage?: string) => void): Promise<void> => {
   try {
     const photosUrl: Photo[] = []
-
+    const res = await api.get('app-data/aws')
+    const awsData: AWSDataResponse = res.data
     for (const { file } of acceptedFiles) {
       const mainFile: File = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1024 }) as File
       const thumbFile: File = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 500 }) as File
       const { path, thumbPath } = generateS3ImagePath(file, 'products')
-      await uploadObjectOnS3(thumbFile, thumbPath)
-      await uploadObjectOnS3(mainFile, path)
+      await uploadObjectOnS3(thumbFile, thumbPath, awsData)
+      await uploadObjectOnS3(mainFile, path, awsData)
       photosUrl.push({ path, thumbPath })
     }
 
@@ -86,21 +87,22 @@ export const showProduct = async (id: string, callback: (data?: ProductDataRespo
 export const updateProduct = async (data: CreateProductData, currentProduct: ProductDataResponse, currentPhotos: ProductPhotoResponse[], deletedPhotos: PhotoResponse[], acceptedFiles: AcceptedFile[], callback: (data?: ProductDataResponse, errorMessage?: string) => void): Promise<void> => {
   try {
     const photosUrl: Photo[] = []
-
+    const res = await api.get('app-data/aws')
+    const awsData: AWSDataResponse = res.data
     for (const { file } of acceptedFiles) {
       const mainFile: File = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1024 }) as File
       const thumbFile: File = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 500 }) as File
       const { path, thumbPath } = generateS3ImagePath(file, 'products')
-      await uploadObjectOnS3(thumbFile, thumbPath)
-      await uploadObjectOnS3(mainFile, path)
+      await uploadObjectOnS3(thumbFile, thumbPath, awsData)
+      await uploadObjectOnS3(mainFile, path, awsData)
       photosUrl.push({ path, thumbPath })
     }
 
     data.photos = photosUrl.reverse()
 
     for (const deletedPhoto of deletedPhotos) {
-      await deleteObjectOnS3(deletedPhoto.path)
-      await deleteObjectOnS3(deletedPhoto.thumbPath)
+      await deleteObjectOnS3(deletedPhoto.path, awsData)
+      await deleteObjectOnS3(deletedPhoto.thumbPath, awsData)
       await api.delete(`${apiRoutes.productPhoto}/${deletedPhoto._id}`)
     }
 
@@ -122,7 +124,9 @@ export const updateProduct = async (data: CreateProductData, currentProduct: Pro
 
 export const deleteProduct = async (product: ProductDataResponse, callback: (errorMessage?: string) => void): Promise<void> => {
   try {
-    await deleteObjectOnS3(product.thumbImg)
+    const response = await api.get('app-data/aws')
+    const awsData: AWSDataResponse = response.data
+    await deleteObjectOnS3(product.thumbImg, awsData)
     await api.delete(`${apiRoutes.product}/${product._id}`)
     callback()
   } catch (error) {

@@ -5,6 +5,7 @@ import { FormHandles } from '@unform/core'
 import { useFeedback } from '../../../context/FeedbackProvider'
 import { Button, Select } from '../../../components/Common/Form'
 import { createProduct, CreateProductData, ProductData } from '../../../../services/api/products'
+import { useHistory } from 'react-router-dom'
 import PageContent from '../../../components/Common/PageContent'
 import PageCard from '../../../components/Common/PageCard'
 import AddSpecifications from '../../../components/Products/FormSections/AddSpecifications'
@@ -16,11 +17,13 @@ import ProductDetailsFormSection from '../../../components/Products/FormSections
 import CustomizedImageFormSection from '../../../components/Products/FormSections/CustomizedImagesFormSection'
 import ProductPhotosFormSection from '../../../components/Products/FormSections/ProductPhotosFormSection'
 import { AcceptedFile } from '../../../../utils/format-files'
+import { Helmet } from 'react-helmet'
 
 const AddProduct: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const [acceptedFiles, setAcceptedFiles] = useState<AcceptedFile[]>([])
   const { openToast, showBackdrop, dismissBackdrop } = useFeedback()
+  const history = useHistory()
 
   const formValidation = useCallback((data: ProductData): boolean => {
     const { name, description, category } = data
@@ -50,6 +53,7 @@ const AddProduct: React.FC = () => {
         if (product) {
           dismissBackdrop()
           openToast('Produto adicionado com sucesso!', 'success')
+          history.push(`/produto/${product._id}`)
         }
         if (errorMessage) openToast(errorMessage, 'error')
       })
@@ -57,7 +61,11 @@ const AddProduct: React.FC = () => {
   }, [acceptedFiles, dismissBackdrop, formValidation, openToast, showBackdrop])
 
   return (
-    <PageContent>
+    <PageContent pageTitle={'Adicionar Produto'}>
+      <Helmet>
+        <title>Novo Produto | Painel Administrativo | Sonhadeira</title>
+        <meta name="description" content="Painel administrativo da Sonhadeira" />
+      </Helmet>
       <Form ref={formRef} action="#" onSubmit={handleSubmit}>
       <Row>
         <Col sm="9">

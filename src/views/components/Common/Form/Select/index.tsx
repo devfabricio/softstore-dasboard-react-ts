@@ -6,6 +6,7 @@ export interface SelectOptionsTypes {
   key: string
   value: string
   selected?: boolean
+  disabled?: boolean
 }
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
@@ -32,7 +33,7 @@ const Select: React.FC<SelectProps> = ({ name, labelText, options, ...props }) =
       {labelText && <label>{labelText}</label>}
       <select ref={selectRef} {...props}>
         {options.map((optionItem, i) =>
-          <option selected={optionItem.selected} key={i} value={optionItem.value}>{optionItem.key}</option>)}
+          <option selected={optionItem.selected} disabled={optionItem.disabled} key={i} value={optionItem.value}>{optionItem.key}</option>)}
       </select>
       {error}
     </S.SelectContainer>

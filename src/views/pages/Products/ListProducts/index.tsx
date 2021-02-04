@@ -11,6 +11,7 @@ import { s3BaseUrl } from '../../../../services/aws/config'
 import { formatPrice } from '../../../../utils/format-price'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import { useFeedback } from '../../../context/FeedbackProvider'
+import { Helmet } from 'react-helmet'
 
 const ListProducts: React.FC = () => {
   const [products, setProducts] = useState<ProductDataResponse[]>([])
@@ -45,10 +46,14 @@ const ListProducts: React.FC = () => {
   }, [listProducts])
 
   return (
-    <PageContent>
+    <PageContent pageTitle={'Listar Produto'}>
+      <Helmet>
+        <title>Produtos | Painel Administrativo | Sonhadeira</title>
+        <meta name="description" content="Painel administrativo da Sonhadeira" />
+      </Helmet>
       <Row>
         <Col sm="12">
-          <PageCard title={'Lista de Categorias'} description={'Confira abaixo a lista de categorias'} >
+          <PageCard title={'Lista de Produtos'} description={'Confira abaixo a lista de produtos adicionados'} >
             <div className="table-responsive">
               <Table className="table mb-0">
                 <thead>

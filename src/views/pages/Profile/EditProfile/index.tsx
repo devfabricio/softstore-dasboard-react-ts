@@ -30,7 +30,7 @@ const EditProfile: React.FC = () => {
   }, [administrator, openToast, updateAdministratorData])
 
   return (
-    <PageContent>
+    <PageContent pageTitle={'Editar Perfil'}>
       <PageCard title={'Editar Perfil'} description={'Preencha o formulário abaixo para editar os seus dados de perfil'}>
         <Form ref={formRef} action="#" onSubmit={handleSubmit}>
           <Row>
@@ -42,7 +42,7 @@ const EditProfile: React.FC = () => {
             </Col>
           </Row>
           {loading && <CircularProgress />}
-          {!loading && <Button type="submit" color="primary" className="mr-1 waves-effect waves-light"> Salvar Dados </Button>}
+          {!loading && <Button type="submit" color="primary" className="btn btn-primary mr-1 waves-effect waves-light"> Salvar Dados </Button>}
         </Form>
       </PageCard>
     </PageContent>

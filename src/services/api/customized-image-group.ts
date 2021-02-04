@@ -23,3 +23,12 @@ export const createCustomizedImageGroup = async (data: CustomizedImageGroupData,
     callback(error)
   }
 }
+
+export const deleteCustomizedImageGroup = async (id: string, callback: (errorMessage?: string) => void): Promise<void> => {
+  try {
+    await api.delete(`${apiRoutes.customizedImageGroup}/${id}`)
+    callback()
+  } catch (error) {
+    console.log(error)
+  }
+}

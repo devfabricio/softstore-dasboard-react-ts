@@ -102,7 +102,7 @@ const ProductDetailsFormSection: React.FC<ProductDetailsFormSectionProps> = ({ f
     }
   }, [categoriesRelationship, productCategories])
 
-  return (<PageCard title={'Novo Produto'} description={'Insira as informações abaixo para adicionar o produto'}>
+  return (<PageCard title={'Informações Gerais'} description={'Insira as informações abaixo para adicionar o produto'}>
     <Row>
       <Col sm="12">
         <Input name={'name'} type="text" id="username" label={'Nome'} className="form-control" defaultValue={product ? product.name : ''} />

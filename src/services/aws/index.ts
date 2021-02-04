@@ -1,13 +1,14 @@
-import aws from 'aws-sdk'
+import aws, { S3 } from 'aws-sdk'
+import { AWSDataResponse } from './upload-object'
 
-const bucketRegion = 'us-east-1'
+const s3 = (awsData: AWSDataResponse): typeof S3 => {
+  aws.config.update({
+    region: awsData.AWSBucketRegion,
+    secretAccessKey: awsData.AWSSecretAccessKey,
+    accessKeyId: awsData.AWSAccessKeyId
+  })
 
-aws.config.update({
-  region: bucketRegion,
-  secretAccessKey: 'TpROt0qooI4ZgOqBZf9TspKonSsuSUTCVNDo1Ogt',
-  accessKeyId: 'AKIA4DTTC4LF5DBY6V75'
-})
-
-const s3 = aws.S3
+  return aws.S3
+}
 
 export default s3

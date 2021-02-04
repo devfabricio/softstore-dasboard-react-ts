@@ -36,9 +36,9 @@ export const createCategory = async (data: CreateCategoryData, callback: (data?:
   }
 }
 
-export const updateCategory = async (data: CategoryData, callback: (data?: CategoryData, errorMessage?: string) => void): Promise<void> => {
+export const updateCategory = async (data: CreateCategoryData, id: string, callback: (data?: CategoryData, errorMessage?: string) => void): Promise<void> => {
   try {
-    const response = await api.put(categoryUrl, data)
+    const response = await api.put(categoryUrl, { ...data, _id: id })
     callback(response.data)
   } catch (error) {
     const message = messages.find(message => message.original === error.response.data.message)
